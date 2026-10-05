@@ -1,0 +1,4 @@
+package com.documentcategorization.model;
+public enum PipelineStage {
+    UPLOADED, PREPROCESSED, FEATURES_EXTRACTED, FEATURES_OPTIMIZED, SIMILARITY_CALCULATED, GRAPH_BUILT, CATEGORIZED
+}
