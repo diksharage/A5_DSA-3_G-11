@@ -191,24 +191,24 @@ body {
 
 <div class="card">
     <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-timeline"></i> Processing Pipeline</h3></div>
-    <div class="horiz-pipeline">
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Upload</div></div>
-        <div class="hp-line" th:classappend="${documents.size() > 0 ? 'completed' : ''}"></div>
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Extract</div></div>
-        <div class="hp-line" th:classappend="${documents.size() > 0 ? 'completed' : ''}"></div>
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Preprocess</div></div>
-        <div class="hp-line" th:classappend="${documents.size() > 0 ? 'completed' : ''}"></div>
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Features</div></div>
-        <div class="hp-line" th:classappend="${documents.size() > 0 ? 'completed' : ''}"></div>
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Optimize</div></div>
-        <div class="hp-line" th:classappend="${documents.size() > 0 ? 'completed' : ''}"></div>
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Similarity</div></div>
-        <div class="hp-line" th:classappend="${documents.size() > 0 ? 'completed' : ''}"></div>
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Graph</div></div>
-        <div class="hp-line" th:classappend="${documents.size() > 0 ? 'completed' : ''}"></div>
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">BFS/DFS</div></div>
-        <div class="hp-line" th:classappend="${documents.size() > 0 ? 'completed' : ''}"></div>
-        <div class="hp-node" th:classappend="${documents.size() > 0 ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Categories</div></div>
+    <div class="horiz-pipeline" th:with="hasDocs=${documents.size() > 0}, doc=${hasDocs ? documents[0] : null}, pre=${hasDocs}, feat=${hasDocs}, opt=${hasDocs and doc.currentStage.name() == 'CATEGORIZED'}, sim=${hasDocs and graph != null}, grp=${hasDocs and graph != null}, bfs=${hasDocs and categories != null}, cat=${hasDocs and categories != null}">
+        <div class="hp-node" th:classappend="${hasDocs ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Upload</div></div>
+        <div class="hp-line" th:classappend="${hasDocs ? 'completed' : ''}"></div>
+        <div class="hp-node" th:classappend="${pre ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Extract</div></div>
+        <div class="hp-line" th:classappend="${pre ? 'completed' : ''}"></div>
+        <div class="hp-node" th:classappend="${pre ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Preprocess</div></div>
+        <div class="hp-line" th:classappend="${feat ? 'completed' : ''}"></div>
+        <div class="hp-node" th:classappend="${feat ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Features</div></div>
+        <div class="hp-line" th:classappend="${opt ? 'completed' : ''}"></div>
+        <div class="hp-node" th:classappend="${opt ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Optimize</div></div>
+        <div class="hp-line" th:classappend="${sim ? 'completed' : ''}"></div>
+        <div class="hp-node" th:classappend="${sim ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Similarity</div></div>
+        <div class="hp-line" th:classappend="${grp ? 'completed' : ''}"></div>
+        <div class="hp-node" th:classappend="${grp ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Graph</div></div>
+        <div class="hp-line" th:classappend="${bfs ? 'completed' : ''}"></div>
+        <div class="hp-node" th:classappend="${bfs ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">BFS/DFS</div></div>
+        <div class="hp-line" th:classappend="${cat ? 'completed' : ''}"></div>
+        <div class="hp-node" th:classappend="${cat ? 'completed' : ''}"><div class="hp-circle"><i class="fa-solid fa-check"></i></div><div class="hp-label">Categories</div></div>
     </div>
 </div>
 
