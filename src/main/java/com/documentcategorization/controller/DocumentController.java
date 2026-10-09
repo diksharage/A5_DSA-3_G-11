@@ -73,4 +73,39 @@ public class DocumentController {
         analysisService.reset();
         return "redirect:/"; 
     }
+
+    @GetMapping("/document/{id}")
+    public String documentDetails(@PathVariable("id") String id, Model model, RedirectAttributes attrs) {
+        java.util.Optional<Document> docOpt = documentService.getDocumentById(id);
+        if (!docOpt.isPresent()) {
+            attrs.addFlashAttribute("error", "Document not found.");
+            return "redirect:/";
+        }
+        Document doc = docOpt.get();
+        model.addAttribute("doc", doc);
+
+        // Find category and group
+        String category = "Uncategorized (Run Analysis)";
+        String group = "None";
+        if (analysisService.getCategories() != null) {
+            for (com.documentcategorization.model.CategoryResult cr : analysisService.getCategories()) {
+                if (cr.getDocuments().contains(doc)) {
+                    category = cr.getCategoryLabel();
+                    group = cr.getGroupId();
+                    break;
+                }
+            }
+        }
+        model.addAttribute("category", category);
+        model.addAttribute("group", group);
+
+        // Find similar documents
+        java.util.List<Document> similarDocs = new java.util.ArrayList<>();
+        if (analysisService.getGraph() != null && analysisService.getGraph().getAdjacencyList().containsKey(doc)) {
+            similarDocs = analysisService.getGraph().getAdjacencyList().get(doc);
+        }
+        model.addAttribute("similarDocs", similarDocs);
+
+        return "document-details";
+    }
 }

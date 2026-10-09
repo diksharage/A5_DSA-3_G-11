@@ -185,7 +185,7 @@ body {
             <div>
                 <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Documents</h5>
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <div th:each="doc : ${category.documents}" style="background: #f1f5f9; padding: 0.75rem 1rem; border-radius: 6px; font-weight: 500; font-size: 0.9rem; color: var(--text-main); display: flex; align-items: center; gap: 0.75rem;"><i class="fa-regular fa-file-lines" style="color:var(--accent);"></i> <span th:text="${doc.originalFilename}"></span></div>
+                    <div th:each="doc : ${category.documents}" style="background: #f1f5f9; padding: 0.75rem 1rem; border-radius: 6px; font-weight: 500; font-size: 0.9rem; color: var(--text-main); display: flex; align-items: center; gap: 0.75rem;"><i class="fa-regular fa-file-lines" style="color:var(--accent);"></i> <a th:href="'/document/' + ${doc.id}" style="text-decoration: none; color: var(--text-main);" th:text="${doc.originalFilename}"></a></div>
                 </div>
             </div>
             

@@ -262,7 +262,7 @@ body {
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <div style="width:32px; height:32px; background:#eff6ff; color:#3b82f6; border-radius:6px; display:flex; align-items:center; justify-content:center;"><i class="fa-regular fa-file-lines"></i></div>
                             <div>
-                                <div style="font-weight: 600; color: var(--text-main);" th:text="${doc.originalFilename}"></div>
+                                <a th:href="'/document/' + ${doc.id}" style="font-weight: 600; color: var(--accent); text-decoration: none;" th:text="${doc.originalFilename}"></a>
                                 <div style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;" th:text="'ID: ' + ${#strings.substring(doc.id,0,8)}"></div>
                             </div>
                         </div>

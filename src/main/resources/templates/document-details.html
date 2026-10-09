@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Optimization Framework - Document Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #f8fafc; --sidebar-bg: #0f172a; --sidebar-text: #94a3b8; --sidebar-hover: #f8fafc; --accent: #2563eb; --accent-hover: #1d4ed8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --card-bg: #ffffff; --success: #10b981; --warning: #f59e0b; --error: #ef4444; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 280px; background: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; overflow-y: auto; }
+        .brand { padding: 2rem 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .brand-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), #60a5fa); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; box-shadow: 0 4px 6px rgba(37,99,235,0.2); }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-title { color: #fff; font-weight: 800; font-size: 1.1rem; line-height: 1.2; letter-spacing: -0.5px; }
+        .brand-subtitle { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: #38bdf8; font-weight: 600; margin-top: 0.2rem; }
+        .nav-container { padding: 1.5rem 1rem; flex: 1; }
+        .nav-section { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #475569; font-weight: 700; margin: 1.5rem 0 0.5rem 1rem; }
+        .nav-section:first-child { margin-top: 0; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--sidebar-text); text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; margin-bottom: 0.25rem; }
+        .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; opacity: 0.7; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--sidebar-hover); }
+        .nav-item:hover i { opacity: 1; color: var(--accent); }
+        .nav-item.active { background: var(--accent); color: white; }
+        .nav-item.active i { opacity: 1; color: white; }
+        .main-wrapper { flex: 1; padding: 2rem 3rem; overflow-y: auto; }
+        .hero { background: #fff; border-radius: 16px; padding: 2.5rem 3rem; position: relative; overflow: hidden; margin-bottom: 2rem; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .hero::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 300px; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(37,99,235,0.05) 100%); pointer-events: none; }
+        .hero h1 { margin: 0 0 0.5rem 0; font-size: 2.25rem; font-weight: 800; letter-spacing: -1px; color: var(--text-main); }
+        .hero p { margin: 0; font-size: 1.1rem; color: var(--text-muted); max-width: 600px; }
+        .hero-highlight { color: var(--accent); }
+        .card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary:hover { background: #1d4ed8; }
+        
+        .prop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .prop-card { background: #f8fafc; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; }
+        .prop-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.4rem; }
+        .prop-val { font-size: 1rem; color: var(--text-main); font-weight: 600; word-break: break-all; }
+        
+        .scrollable-panel { background: #1e293b; color: #f8fafc; border-radius: 8px; border: 1px solid #334155; padding: 1rem; max-height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; }
+        
+        .chip { display: inline-flex; align-items: center; gap: 0.4rem; background: #fff; border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-family: monospace; margin: 0.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .chip-opt { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+        .freq-badge { background: #dbeafe; color: #1e40af; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+        
+        /* Custom scrollbar for panels */
+        .scrollable-panel::-webkit-scrollbar, .chip-container::-webkit-scrollbar { width: 8px; }
+        .scrollable-panel::-webkit-scrollbar-track, .chip-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        .scrollable-panel::-webkit-scrollbar-thumb, .chip-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .chip-container::-webkit-scrollbar-thumb { background: #cbd5e1; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <div class="brand-text">
+                <div class="brand-title">OPTIMIZATION<br>FRAMEWORK</div>
+                <div class="brand-subtitle">DSA DOCUMENT ENGINE</div>
+            </div>
+        </div>
+        <div class="nav-container">
+            <div class="nav-section">OVERVIEW</div>
+            <a href="/" class="nav-item active"><i class="fa-solid fa-gauge"></i> Dashboard & Upload</a>
+            
+            <div class="nav-section">PROCESSING</div>
+            <a href="/pipeline" class="nav-item "><i class="fa-solid fa-bars-progress"></i> Processing Pipeline</a>
+            <a href="/analysis" class="nav-item "><i class="fa-solid fa-microscope"></i> DSA Analysis</a>
+            
+            <div class="nav-section">ALGORITHMS</div>
+            <a href="/string-algorithms" class="nav-item "><i class="fa-solid fa-code"></i> String Algorithms</a>
+            <a href="/similarity" class="nav-item "><i class="fa-solid fa-not-equal"></i> Similarity Matrix</a>
+            <a href="/graph" class="nav-item "><i class="fa-solid fa-network-wired"></i> Graph Visualization</a>
+            
+            <div class="nav-section">RESULTS</div>
+            <a href="/results" class="nav-item "><i class="fa-solid fa-layer-group"></i> Results & Categories</a>
+            <a href="/export" class="nav-item "><i class="fa-solid fa-file-export"></i> Export JSON</a>
+        </div>
+    </div>
+    
+    <div class="main-wrapper">
+        <a href="/" class="btn-primary" style="background:#64748b; margin-bottom: 1.5rem;"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+        
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Document <span class="hero-highlight">Details</span></h1>
+                <p>Complete algorithmic processing lifecycle for <strong th:text="${doc.originalFilename}"></strong>.</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-file-circle-info"></i> Information & Topology</h3></div>
+            <div class="prop-grid">
+                <div class="prop-card"><div class="prop-label"><i class="fa-solid fa-file"></i> Filename</div><div class="prop-val" th:text="${doc.originalFilename}"></div></div>
+                <div class="prop-card"><div class="prop-label"><i class="fa-solid fa-file-code"></i> File Type</div><div class="prop-val" th:text="${doc.fileType}"></div></div>
+                <div class="prop-card"><div class="prop-label"><i class="fa-solid fa-weight-hanging"></i> Size</div><div class="prop-val" th:text="${doc.fileSize + ' Bytes'}"></div></div>
+                <div class="prop-card"><div class="prop-label"><i class="fa-solid fa-bars-progress"></i> Status</div><div class="prop-val" style="color:#059669;" th:text="${doc.currentStage}"></div></div>
+                <div class="prop-card"><div class="prop-label"><i class="fa-solid fa-folder-tree"></i> Category</div><div class="prop-val" style="color:var(--accent);" th:text="${category}"></div></div>
+                <div class="prop-card"><div class="prop-label"><i class="fa-solid fa-layer-group"></i> Group</div><div class="prop-val" th:text="${group}"></div></div>
+            </div>
+            
+            <div>
+                <div class="prop-label" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-link"></i> Similar Documents (Graph Neighbors)</div>
+                <div style="background: #f8fafc; border: 1px solid var(--border); padding: 1rem; border-radius: 8px;">
+                    <div th:if="${similarDocs.size() == 0}" style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No similar documents found under current graph threshold.</div>
+                    <div th:if="${similarDocs.size() > 0}" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <a th:each="sd : ${similarDocs}" th:href="'/document/' + ${sd.id}" class="chip" style="text-decoration: none; color: var(--text-main); cursor: pointer;"><i class="fa-solid fa-file-lines" style="color: var(--accent);"></i> <span th:text="${sd.originalFilename}"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            <!-- Extracted Features -->
+            <div class="card">
+                <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-hashtag"></i> Extracted Features (Count: <span th:text="${doc.extractedFeatures != null ? doc.extractedFeatures.size() : 0}"></span>)</h3></div>
+                <div class="chip-container" style="max-height: 300px; overflow-y: auto; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <div th:if="${doc.extractedFeatures == null or doc.extractedFeatures.size() == 0}" style="color: var(--text-muted); font-size: 0.9rem;">Run Full Analysis to generate features.</div>
+                    <span class="chip" th:each="tf : ${doc.extractedFeatures}">
+                        <strong th:text="${tf.term}"></strong> <span class="freq-badge" style="background:#e2e8f0; color:#475569;" th:text="${tf.frequency}"></span>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Optimized Features -->
+            <div class="card">
+                <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-gem"></i> Optimized Features (Count: <span th:text="${doc.optimizedFeatures != null ? doc.optimizedFeatures.size() : 0}"></span>)</h3></div>
+                <div class="chip-container" style="max-height: 300px; overflow-y: auto; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); border-top: 4px solid var(--accent);">
+                    <div th:if="${doc.optimizedFeatures == null or doc.optimizedFeatures.size() == 0}" style="color: var(--text-muted); font-size: 0.9rem;">Run Full Analysis to optimize features.</div>
+                    <span class="chip chip-opt" th:each="tf : ${doc.optimizedFeatures}">
+                        <strong th:text="${tf.term}"></strong> <span class="freq-badge" th:text="${tf.frequency}"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-scissors"></i> Preprocessed Tokens</h3></div>
+            <div class="scrollable-panel" th:text="${doc.tokens != null and doc.tokens.size() > 0 ? #strings.listJoin(doc.tokens, ' ') : 'Tokens not available. Run Full Analysis.'}"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-file-lines"></i> Raw Text Corpus</h3></div>
+            <div class="scrollable-panel" style="background: #fff; color: var(--text-main); max-height: 400px; font-family: 'Inter', sans-serif;" th:text="${doc.rawText}"></div>
+        </div>
+    </div>
+</body>
+</html>
