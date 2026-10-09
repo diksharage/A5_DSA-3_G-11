@@ -44,4 +44,30 @@ public class DocumentGraph {
             }
         }
     }
+
+    public List<Document> bfsTraversal(Document start) {
+        List<Document> traversal = new ArrayList<>();
+        if (start == null || !adjacencyList.containsKey(start)) return traversal;
+        Set<Document> visited = new HashSet<>();
+        bfs(start, visited, traversal);
+        return traversal;
+    }
+
+    public List<Document> dfsTraversal(Document start) {
+        List<Document> traversal = new ArrayList<>();
+        if (start == null || !adjacencyList.containsKey(start)) return traversal;
+        Set<Document> visited = new HashSet<>();
+        dfsHelper(start, visited, traversal);
+        return traversal;
+    }
+
+    private void dfsHelper(Document curr, Set<Document> visited, List<Document> traversal) {
+        visited.add(curr);
+        traversal.add(curr);
+        for (Document neighbor : adjacencyList.getOrDefault(curr, Collections.emptyList())) {
+            if (!visited.contains(neighbor)) {
+                dfsHelper(neighbor, visited, traversal);
+            }
+        }
+    }
 }

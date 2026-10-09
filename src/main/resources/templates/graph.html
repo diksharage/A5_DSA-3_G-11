@@ -158,56 +158,137 @@ body {
     </div>
     
     <div class="main-wrapper">
-        <th:block th:with="graph=${@graphService.buildGraph(@documentService.getAllDocuments(), @graphService.getCurrentThreshold())}, categories=${@analysisService.categories}">
-            
+        
+
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({startOnLoad:true, theme:'base', themeVariables: { primaryColor: '#eff6ff', primaryBorderColor: '#2563eb', primaryTextColor: '#0f172a', lineColor: '#94a3b8', fontFamily: 'Inter' }});</script>
-
-<div class="hero"><div class="hero-content"><h1>Graph <span class="hero-highlight">Analytics Dashboard</span></h1><p>Adjacency list topology based on Jaccard similarity thresholds.</p></div></div>
-
-<div class="metrics-grid" style="margin-bottom: 2rem;">
-    <div class="metric-card">
-        <div class="metric-icon" style="background:#eff6ff; color:#3b82f6;"><i class="fa-solid fa-circle-nodes"></i></div>
-        <div class="metric-info"><h4>Documents (V)</h4><p class="val" th:text="${graph.adjacencyList.size()}">0</p></div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-icon" style="background:#f5f3ff; color:#8b5cf6;"><i class="fa-solid fa-link"></i></div>
-        <div class="metric-info"><h4>Edges (E)</h4><p class="val" th:text="${graph.edgeCount}">0</p></div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-icon" style="background:#ecfdf5; color:#10b981;"><i class="fa-solid fa-object-group"></i></div>
-        <div class="metric-info"><h4>Connected Components</h4><p class="val" th:text="${graph.findConnectedComponents().size()}">0</p></div>
-    </div>
-    <div class="metric-card" style="background: var(--sidebar-bg); border-color: var(--sidebar-bg);">
-        <form action="/graph/threshold" method="post" style="width: 100%;">
-            <label style="display:block; font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:0.5rem;">Threshold (T)</label>
-            <div style="display:flex; gap:0.5rem;">
-                <input type="number" name="threshold" step="0.01" min="0" max="1" th:value="${threshold}" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid #334155; background:#1e293b; color:#fff; font-family:monospace; font-size:1rem;">
-                <button type="submit" class="btn-primary" style="padding: 0.5rem;"><i class="fa-solid fa-check"></i></button>
-            </div>
-        </form>
+<style>
+.chip { display: inline-flex; align-items: center; gap: 0.4rem; background: #fff; border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-family: monospace; margin: 0.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.chip-opt { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+</style>
+<div class="hero">
+    <div class="hero-content">
+        <h1>Graph <span class="hero-highlight">Analytics Dashboard</span></h1>
+        <p>Adjacency list topology based on Jaccard similarity thresholds.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #cbd5e1; background: rgba(0,0,0,0.2); display: inline-block; padding: 0.5rem 1rem; border-radius: 6px;"><i class="fa-solid fa-circle-info" style="color: #38bdf8;"></i> Each document is represented as a vertex. An edge represents sufficient similarity between two documents.</p>
     </div>
 </div>
 
-<div class="card" style="min-height: 500px; display: flex; flex-direction: column;">
-    <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-draw-polygon"></i> Topology Visualization</h3></div>
-    <div style="flex:1; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 2rem;">
-        <div class="mermaid" th:if="${graph.adjacencyList.size() > 0}">
-        graph TD
-        <th:block th:each="entry : ${graph.adjacencyList}">
-            <th:block th:each="neighbor : ${entry.value}">
-                [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]] --- [[${#strings.replace(neighbor.originalFilename, '.txt', '')}]]
+<div th:if="${graph == null}" style="text-align: center; padding: 4rem; color: var(--text-muted); border: 1px dashed var(--border); border-radius: 12px; background: #f8fafc; margin-bottom: 2rem;">
+    <i class="fa-solid fa-network-wired" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+    <h4>GRAPH NOT BUILT YET</h4>
+    <p>Please click "Run Full Analysis" on the dashboard to build the document graph.</p>
+</div>
+
+<div th:if="${graph != null}">
+    <div class="metrics-grid" style="margin-bottom: 2rem;">
+        <div class="metric-card">
+            <div class="metric-icon" style="background:#eff6ff; color:#3b82f6;"><i class="fa-solid fa-circle-nodes"></i></div>
+            <div class="metric-info"><h4>Vertices (V)</h4><p class="val" th:text="${graph.adjacencyList.size()}">0</p></div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background:#f5f3ff; color:#8b5cf6;"><i class="fa-solid fa-link"></i></div>
+            <div class="metric-info"><h4>Edges (E)</h4><p class="val" th:text="${graph.edgeCount / 2}">0</p></div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background:#ecfdf5; color:#10b981;"><i class="fa-solid fa-object-group"></i></div>
+            <div class="metric-info"><h4>Connected Components</h4><p class="val" th:text="${graph.findConnectedComponents().size()}">0</p></div>
+        </div>
+        <div class="metric-card" style="background: var(--sidebar-bg); border-color: var(--sidebar-bg);">
+            <form action="/graph/threshold" method="post" style="width: 100%;">
+                <label style="display:block; font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:0.5rem;">Current Threshold (T)</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="number" name="threshold" step="0.01" min="0" max="1" th:value="${threshold}" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid #334155; background:#1e293b; color:#fff; font-family:monospace; font-size:1rem;">
+                    <button type="submit" class="btn-primary" style="padding: 0.5rem;"><i class="fa-solid fa-arrows-rotate"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-draw-polygon"></i> Topology Visualization</h3></div>
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 2rem; min-height: 400px;">
+            <div class="mermaid" th:if="${graph.adjacencyList.size() > 0 and graph.edgeCount > 0}">
+            graph TD
+            <th:block th:each="entry : ${graph.adjacencyList}">
+                <th:block th:each="neighbor : ${entry.value}">
+                    [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]] ---|[[${#numbers.formatDecimal(@similarityService.calculateJaccardSimilarity(entry.key, neighbor), 1, 2)}]]| [[${#strings.replace(neighbor.originalFilename, '.txt', '')}]]
+                </th:block>
             </th:block>
-        </th:block>
+            </div>
+            <div class="mermaid" th:if="${graph.adjacencyList.size() > 0 and graph.edgeCount == 0}">
+            graph TD
+            <th:block th:each="entry : ${graph.adjacencyList}">
+                [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]]
+            </th:block>
+            </div>
+            <div th:if="${graph.adjacencyList.size() == 0}" style="text-align: center; color: var(--text-muted);">
+                <i class="fa-solid fa-project-diagram" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+                <h4>NO GRAPH DATA</h4><p>Upload documents to generate nodes.</p>
+            </div>
         </div>
-        <div th:if="${graph.adjacencyList.size() == 0}" style="text-align: center; color: var(--text-muted);">
-            <i class="fa-solid fa-project-diagram" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
-            <h4>NO GRAPH DATA</h4><p>Upload documents to generate nodes.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <!-- BFS Traversal -->
+        <div class="card">
+            <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-water"></i> Breadth-First Search (BFS)</h3></div>
+            <form action="/graph/traverse" method="post" style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
+                <input type="hidden" name="algorithm" value="BFS">
+                <select name="docId" required style="flex: 1; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
+                    <option value="" disabled selected>Starting Document...</option>
+                    <option th:each="doc : ${documents}" th:value="${doc.id}" th:text="${doc.originalFilename}"></option>
+                </select>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-play"></i> Run BFS</button>
+            </form>
+            <div th:if="${traversalAlgo == 'BFS'}" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">Traversal Order (Start: [[${traversalStart}]])</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                    <th:block th:each="node, iterStat : ${traversalResult}">
+                        <span class="chip chip-opt" th:text="${node.originalFilename}"></span>
+                        <i th:if="${!iterStat.last}" class="fa-solid fa-arrow-right" style="color: #cbd5e1; font-size: 0.8rem;"></i>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+
+        <!-- DFS Traversal -->
+        <div class="card">
+            <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-arrow-down-up-across-line"></i> Depth-First Search (DFS)</h3></div>
+            <form action="/graph/traverse" method="post" style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
+                <input type="hidden" name="algorithm" value="DFS">
+                <select name="docId" required style="flex: 1; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
+                    <option value="" disabled selected>Starting Document...</option>
+                    <option th:each="doc : ${documents}" th:value="${doc.id}" th:text="${doc.originalFilename}"></option>
+                </select>
+                <button type="submit" class="btn-primary" style="background: #4f46e5;"><i class="fa-solid fa-play"></i> Run DFS</button>
+            </form>
+            <div th:if="${traversalAlgo == 'DFS'}" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">Traversal Order (Start: [[${traversalStart}]])</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                    <th:block th:each="node, iterStat : ${traversalResult}">
+                        <span class="chip" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe;" th:text="${node.originalFilename}"></span>
+                        <i th:if="${!iterStat.last}" class="fa-solid fa-arrow-right" style="color: #cbd5e1; font-size: 0.8rem;"></i>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connected Components -->
+    <div class="card">
+        <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-object-group"></i> Connected Components</h3></div>
+        <div th:if="${graph.findConnectedComponents().size() == 0}" style="color: var(--text-muted);">No components generated.</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+            <div th:each="comp, iterStat : ${graph.findConnectedComponents()}" style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem; background: #fff;">
+                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: var(--text-main);"><i class="fa-solid fa-layer-group" style="color: var(--accent); margin-right: 0.5rem;"></i> Component [[${iterStat.index + 1}]]</h4>
+                <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                    <li th:each="doc : ${comp}" th:text="${doc.originalFilename}"></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
-
-        </th:block>
-    </div>
+</div>
 </body>
 </html>
