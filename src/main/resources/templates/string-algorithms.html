@@ -250,6 +250,58 @@ body {
     </div>
 </div>
 
+        
+<!-- COMPARISON SECTION -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-code-compare"></i> Algorithm Comparison View</h3></div>
+    <form action="/string-algorithms/compare" method="post">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end;">
+            <div>
+                <label class="lab-label">Target Document</label>
+                <select name="docId" class="lab-input" style="padding: 0.6rem; margin-bottom: 0;">
+                    <option value="">-- Manual Text Input --</option>
+                    <option th:each="doc : ${documents}" th:value="${doc.id}" th:text="${doc.originalFilename}" th:selected="${doc.id == selectedDocId}"></option>
+                </select>
+            </div>
+            <div>
+                <label class="lab-label">Search Pattern (M)</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" name="pattern" class="lab-input" placeholder="Pattern" required th:value="${inputPattern}" style="margin-bottom: 0;">
+                    <button type="submit" class="btn-primary" style="background: #8b5cf6; padding: 0.6rem 1.5rem; border: none; height: 100%; white-space: nowrap;"><i class="fa-solid fa-bolt"></i> Compare</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="margin-top: 2rem;" th:if="${compareResults != null}">
+    <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-table-list"></i> Comparison Results</h3></div>
+    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--text-main);">
+        <i class="fa-solid fa-lightbulb" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+        <strong>Observation:</strong> Correct algorithms should produce the same matching positions for the same input, while their internal approaches and complexity differ.
+    </div>
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Algorithm</th>
+                <th>Matches</th>
+                <th>Comparisons</th>
+                <th>Time Complexity</th>
+                <th>Space Complexity</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="res : ${compareResults}">
+                <td style="font-weight: 600; color: var(--accent);"><i class="fa-solid fa-microchip" style="margin-right: 0.5rem;"></i> [[${res.algorithmName}]]</td>
+                <td><span class="badge badge-success" th:text="${res.positions.size()} + ' matches'"></span></td>
+                <td style="font-family: monospace;" th:text="${res.comparisons}"></td>
+                <td style="font-family: monospace; background: #f8fafc; border-left: 1px solid var(--border); border-right: 1px solid var(--border);">[[${res.timeComplexity}]]</td>
+                <td style="font-family: monospace;">[[${res.spaceComplexity}]]</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
         </th:block>
     </div>
 </body>

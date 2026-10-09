@@ -80,4 +80,50 @@ public class StringAlgorithmsController {
         
         return "string-algorithms";
     }
+
+    @PostMapping("/string-algorithms/compare")
+    public String compareAlgorithms(
+            @RequestParam(value = "docId", required = false) String docId,
+            @RequestParam(value = "text", required = false) String text, 
+            @RequestParam("pattern") String pattern, 
+            RedirectAttributes attrs,
+            Model model) {
+        
+        if (pattern == null || pattern.trim().isEmpty()) {
+            attrs.addFlashAttribute("error", "Please enter a pattern to compare.");
+            return "redirect:/string-algorithms";
+        }
+
+        String searchTarget = text;
+        String docName = "Manual Text Input";
+
+        if (docId != null && !docId.trim().isEmpty()) {
+            Optional<Document> docOpt = documentService.getDocumentById(docId);
+            if (docOpt.isPresent()) {
+                searchTarget = docOpt.get().getRawText();
+                docName = docOpt.get().getOriginalFilename();
+                model.addAttribute("selectedDocId", docId);
+            }
+        }
+        
+        if (searchTarget == null || searchTarget.trim().isEmpty()) {
+            attrs.addFlashAttribute("error", "Target text is empty.");
+            return "redirect:/string-algorithms";
+        }
+        
+        java.util.List<StringSearchResult> compareResults = new java.util.ArrayList<>();
+        compareResults.add(stringAlgorithmsService.naiveSearch(searchTarget, pattern));
+        compareResults.add(stringAlgorithmsService.kmpSearch(searchTarget, pattern));
+        compareResults.add(stringAlgorithmsService.zAlgorithmSearch(searchTarget, pattern));
+        compareResults.add(stringAlgorithmsService.rabinKarpSearch(searchTarget, pattern));
+        compareResults.add(stringAlgorithmsService.ahoCorasickSearch(searchTarget, Arrays.asList(pattern.split(","))));
+        
+        model.addAttribute("compareResults", compareResults);
+        model.addAttribute("inputText", searchTarget);
+        model.addAttribute("inputPattern", pattern);
+        model.addAttribute("docName", docName);
+        model.addAttribute("documents", documentService.getAllDocuments());
+        
+        return "string-algorithms";
+    }
 }
