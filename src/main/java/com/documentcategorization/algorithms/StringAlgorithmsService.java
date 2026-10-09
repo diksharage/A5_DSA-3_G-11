@@ -71,7 +71,7 @@ public class StringAlgorithmsService {
         res.setFound(!pos.isEmpty());
         res.setPositions(pos);
         res.setComparisons(comparisons);
-        res.setPreprocessingInfo("LPS Array: " + Arrays.toString(lps));
+        res.setPreprocessingInfo("LPS Array computed in O(M)");
         return res;
     }
 
@@ -115,7 +115,7 @@ public class StringAlgorithmsService {
         res.setFound(!pos.isEmpty());
         res.setPositions(pos);
         res.setComparisons(comparisons);
-        res.setPreprocessingInfo("Concat String created length " + l);
+        res.setPreprocessingInfo("Z-Array constructed over concat string.");
         return res;
     }
 
@@ -164,29 +164,104 @@ public class StringAlgorithmsService {
         return res;
     }
 
+    class ACTrieNode {
+        ACTrieNode[] children = new ACTrieNode[256];
+        ACTrieNode fail;
+        List<Integer> output = new ArrayList<>();
+    }
+
     public StringSearchResult ahoCorasickSearch(String text, List<String> patterns) {
         StringSearchResult res = new StringSearchResult();
         res.setAlgorithmName("Aho Corasick Search");
-        res.setWhyUsed("Simultaneous multi-pattern matching using a Trie and failure links.");
+        res.setWhyUsed("Simultaneous multi-pattern matching using an Automaton and failure links.");
         res.setTimeComplexity("O(N+M+Z)");
-        res.setSpaceComplexity("O(M*K)");
+        res.setSpaceComplexity("O(M*Σ)");
         
         Map<String, List<Integer>> multiPos = new HashMap<>();
+        for (String p : patterns) {
+            if(!p.trim().isEmpty()) multiPos.put(p.trim(), new ArrayList<>());
+        }
+        
         List<Integer> allPos = new ArrayList<>();
         int comparisons = 0;
         
-        for (String pat : patterns) {
-            pat = pat.trim();
-            if(pat.isEmpty()) continue;
-            List<Integer> pos = new ArrayList<>();
-            int idx = text.indexOf(pat);
-            while (idx >= 0) {
-                pos.add(idx);
-                allPos.add(idx);
-                comparisons += pat.length();
-                idx = text.indexOf(pat, idx + 1);
+        if (multiPos.isEmpty() || text.isEmpty()) { 
+            res.setFound(false); 
+            res.setPositions(allPos); 
+            return res; 
+        }
+
+        List<String> validPatterns = new ArrayList<>(multiPos.keySet());
+
+        // Build Trie
+        ACTrieNode root = new ACTrieNode();
+        for (int i = 0; i < validPatterns.size(); i++) {
+            String p = validPatterns.get(i);
+            ACTrieNode curr = root;
+            for (char c : p.toCharArray()) {
+                if (c >= 256) continue; // safety fallback for ASCII automaton
+                if (curr.children[c] == null) curr.children[c] = new ACTrieNode();
+                curr = curr.children[c];
             }
-            multiPos.put(pat, pos);
+            curr.output.add(i);
+        }
+
+        // Build Failure Links using BFS
+        Queue<ACTrieNode> q = new LinkedList<>();
+        root.fail = root;
+        for (int c = 0; c < 256; c++) {
+            if (root.children[c] != null) {
+                root.children[c].fail = root;
+                q.add(root.children[c]);
+            } else {
+                root.children[c] = root;
+            }
+        }
+
+        while (!q.isEmpty()) {
+            ACTrieNode u = q.poll();
+            for (int c = 0; c < 256; c++) {
+                if (root != u.children[c] && u.children[c] != null) {
+                    ACTrieNode v = u.children[c];
+                    ACTrieNode failNode = u.fail;
+                    while (failNode != root && failNode.children[c] == null) {
+                        failNode = failNode.fail;
+                    }
+                    if (failNode.children[c] != null && failNode.children[c] != root) {
+                        v.fail = failNode.children[c];
+                    } else {
+                        v.fail = root;
+                    }
+                    if (v.fail != null) {
+                        v.output.addAll(v.fail.output);
+                    }
+                    q.add(v);
+                }
+            }
+        }
+
+        // Search Text
+        ACTrieNode curr = root;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c >= 256) continue;
+            comparisons++;
+            
+            while (curr != root && curr.children[c] == null) {
+                curr = curr.fail;
+            }
+            if (curr.children[c] != null && curr.children[c] != root) {
+                curr = curr.children[c];
+            } else {
+                curr = root;
+            }
+
+            for (int patIdx : curr.output) {
+                String matchPat = validPatterns.get(patIdx);
+                int startIdx = i - matchPat.length() + 1;
+                multiPos.get(matchPat).add(startIdx);
+                allPos.add(startIdx);
+            }
         }
         
         Collections.sort(allPos);
@@ -194,7 +269,7 @@ public class StringAlgorithmsService {
         res.setMultiPositions(multiPos);
         res.setPositions(allPos);
         res.setComparisons(comparisons);
-        res.setPreprocessingInfo("Trie built with " + patterns.size() + " patterns.");
+        res.setPreprocessingInfo("Trie built with failure links for " + validPatterns.size() + " patterns.");
         return res;
     }
 }

@@ -191,11 +191,19 @@ body {
 </div>
 
 <div class="card">
-    <form action="/string-algorithms/run" method="post">
+    <form action="/string-algorithms" method="post">
         <div class="lab-container">
             <div>
-                <label class="lab-label">Corpus Text (N)</label>
-                <textarea name="text" class="lab-input" rows="8" required th:text="${inputText}"></textarea>
+                <div th:if="${error}" style="background:#fee2e2; color:#ef4444; padding:1rem; border-radius:8px; margin-bottom:1rem; border:1px solid #fca5a5;">
+    <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${error}"></span>
+</div>
+<label class="lab-label">Target Document</label>
+                <select name="docId" class="lab-input" style="padding: 0.6rem;">
+                    <option value="">-- Manual Text Input --</option>
+                    <option th:each="doc : ${documents}" th:value="${doc.id}" th:text="${doc.originalFilename}" th:selected="${doc.id == selectedDocId}"></option>
+                </select>
+                <label class="lab-label">Corpus Text (N) - Fallback / Preview</label>
+                <textarea name="text" class="lab-input" rows="6" th:text="${inputText}" placeholder="Enter text manually if no document is selected..."></textarea>
                 <label class="lab-label">Search Pattern (M)</label>
                 <input type="text" name="pattern" class="lab-input" placeholder="Pattern (comma-separated for Aho-Corasick)" required th:value="${inputPattern}">
             </div>
@@ -211,12 +219,19 @@ body {
                 <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 1.5rem; padding: 0.8rem;"><i class="fa-solid fa-play"></i> Execute Algorithm</button>
             </div>
         </div>
-    </form>
+    <div style="margin-top: 1rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px dashed var(--border); font-size: 0.85rem; color: var(--text-muted);">
+        <i class="fa-solid fa-circle-info" style="color: var(--accent);"></i> <strong>Note:</strong> Different algorithms use different search strategies (hashing, DFA, LPS arrays), but a correctly implemented exact string matching algorithm should produce the <strong>same matching positions</strong> for the same text and pattern.
+</div>
+</form>
 </div>
 
 <div class="res-panel" th:if="${result != null}">
     <div class="res-header">
-        <h3 style="margin:0; font-weight:400;"><i class="fa-solid fa-terminal" style="color:#38bdf8; margin-right:0.75rem;"></i><span th:text="${result.algorithmName}"></span> Execution</h3>
+        <div>
+            <h3 style="margin:0 0 0.5rem 0; font-weight:400;"><i class="fa-solid fa-terminal" style="color:#38bdf8; margin-right:0.75rem;"></i><span th:text="${result.algorithmName}"></span> Execution</h3>
+            <div style="font-size: 0.85rem; color: #94a3b8;"><i class="fa-solid fa-file-lines"></i> <strong>Target:</strong> <span th:text="${docName}"></span> | <i class="fa-solid fa-magnifying-glass"></i> <strong>Pattern:</strong> <span th:text="${inputPattern}"></span></div>
+        </div>
+
         <span th:if="${result.found}" style="background:#065f46; color:#34d399; padding:0.4rem 1rem; border-radius:999px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-check"></i> MATCH FOUND</span>
         <span th:if="${!result.found}" style="background:#991b1b; color:#fca5a5; padding:0.4rem 1rem; border-radius:999px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-xmark"></i> MATCH NONE</span>
     </div>
