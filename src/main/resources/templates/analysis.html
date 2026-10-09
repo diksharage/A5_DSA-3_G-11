@@ -158,7 +158,7 @@ body {
     </div>
     
     <div class="main-wrapper">
-        <th:block th:with="graph=${@graphService.buildGraph(@documentService.getAllDocuments(), @graphService.getCurrentThreshold())}, categories=${@analysisService.categories}">
+        
             
 <style>
 .flow-diagram { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 2rem; }
@@ -170,23 +170,96 @@ body {
 .chip-opt { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
 .freq-badge { background: #dbeafe; color: #1e40af; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
 </style>
-<div class="hero"><div class="hero-content"><h1>Algorithm <span class="hero-highlight">Analysis</span></h1><p>Inspect the transformation from raw tokens to frequency-ranked optimized features.</p></div></div>
 
-<div class="card">
-    <div class="flow-diagram">
-        <div class="fd-node"><div class="fd-icon"><i class="fa-solid fa-quote-left"></i></div><h5>Raw Tokens</h5></div>
-        <div class="fd-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-        <div class="fd-node"><div class="fd-icon"><i class="fa-solid fa-hashtag"></i></div><h5>Frequency Count</h5></div>
-        <div class="fd-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-        <div class="fd-node"><div class="fd-icon"><i class="fa-solid fa-sort-amount-down"></i></div><h5>Feature Ranking</h5></div>
-        <div class="fd-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-        <div class="fd-node"><div class="fd-icon"><i class="fa-solid fa-gem"></i></div><h5>Optimized Features</h5></div>
+<style>
+.dsa-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+.dsa-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; }
+.dsa-card-header { display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1rem; }
+.dsa-card-icon { width: 40px; height: 40px; background: #eff6ff; color: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+.dsa-card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: 0.5px; }
+.dsa-prop { display: flex; flex-direction: column; margin-bottom: 0.75rem; }
+.dsa-prop-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; margin-bottom: 0.2rem; }
+.dsa-prop-val { font-size: 0.9rem; color: var(--text-main); line-height: 1.4; }
+.dsa-complexity { margin-top: auto; padding-top: 1rem; border-top: 1px dashed var(--border); font-family: monospace; color: #059669; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
+.chip { display: inline-flex; align-items: center; gap: 0.4rem; background: #fff; border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-family: monospace; margin: 0.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.chip-opt { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+.freq-badge { background: #dbeafe; color: #1e40af; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+</style>
+<div class="hero"><div class="hero-content"><h1>DSA <span class="hero-highlight">Implementation Analysis</span></h1><p>Detailed breakdown of algorithms and data structures applied at each pipeline stage.</p></div></div>
+
+<div class="dsa-card-grid">
+    <!-- Card 1 -->
+    <div class="dsa-card">
+        <div class="dsa-card-header">
+            <div class="dsa-card-icon"><i class="fa-solid fa-hashtag"></i></div>
+            <h3 class="dsa-card-title">FEATURE EXTRACTION</h3>
+        </div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Data Structure</div><div class="dsa-prop-val">Hash Map / Frequency Matrix</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Purpose</div><div class="dsa-prop-val">Count and organize document terms efficiently after stop-word removal.</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Input</div><div class="dsa-prop-val">Raw Document Token Array</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Output</div><div class="dsa-prop-val">Key-Value Pairs (Term &rarr; Count)</div></div>
+        <div class="dsa-complexity"><i class="fa-solid fa-stopwatch"></i> Complexity: O(N)</div>
     </div>
     
+    <!-- Card 2 -->
+    <div class="dsa-card">
+        <div class="dsa-card-header">
+            <div class="dsa-card-icon"><i class="fa-solid fa-sort-amount-down"></i></div>
+            <h3 class="dsa-card-title">OPTIMIZATION</h3>
+        </div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Algorithm</div><div class="dsa-prop-val">Timsort (Collections.sort) / Bounding</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Purpose</div><div class="dsa-prop-val">Sort features by highest frequency and isolate the dominant term vector.</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Input</div><div class="dsa-prop-val">Unordered Hash Map</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Output</div><div class="dsa-prop-val">Truncated Sorted List</div></div>
+        <div class="dsa-complexity"><i class="fa-solid fa-stopwatch"></i> Complexity: O(K log K)</div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="dsa-card">
+        <div class="dsa-card-header">
+            <div class="dsa-card-icon"><i class="fa-solid fa-not-equal"></i></div>
+            <h3 class="dsa-card-title">SIMILARITY</h3>
+        </div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Algorithm</div><div class="dsa-prop-val">Jaccard Similarity</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Purpose</div><div class="dsa-prop-val">Compare optimized feature sets via Intersection over Union ratio.</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Input</div><div class="dsa-prop-val">Two Optimized Feature Sets</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Output</div><div class="dsa-prop-val">Float Score [0.0 - 1.0]</div></div>
+        <div class="dsa-complexity"><i class="fa-solid fa-stopwatch"></i> Complexity: O(N * M)</div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="dsa-card">
+        <div class="dsa-card-header">
+            <div class="dsa-card-icon"><i class="fa-solid fa-network-wired"></i></div>
+            <h3 class="dsa-card-title">GRAPH CONSTRUCTION</h3>
+        </div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Data Structure</div><div class="dsa-prop-val">Adjacency List (Map&lt;Node, List&lt;Node&gt;&gt;)</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Purpose</div><div class="dsa-prop-val">Represent relationships between similar documents linking edges above threshold.</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Input</div><div class="dsa-prop-val">Documents & Threshold</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Output</div><div class="dsa-prop-val">Undirected Graph</div></div>
+        <div class="dsa-complexity"><i class="fa-solid fa-stopwatch"></i> Complexity: O(V&sup2;)</div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="dsa-card">
+        <div class="dsa-card-header">
+            <div class="dsa-card-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <h3 class="dsa-card-title">TRAVERSAL & CATEGORIZATION</h3>
+        </div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Algorithm</div><div class="dsa-prop-val">BFS (Queue) / DFS Connected Components</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Purpose</div><div class="dsa-prop-val">Traverse the Adjacency List to group mutually similar disjoint components.</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Input</div><div class="dsa-prop-val">Adjacency List</div></div>
+        <div class="dsa-prop"><div class="dsa-prop-label">Output</div><div class="dsa-prop-val">List of Grouped Components</div></div>
+        <div class="dsa-complexity"><i class="fa-solid fa-stopwatch"></i> Complexity: O(V + E)</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-microscope"></i> Extracted Data Verification</h3></div>
     <div th:if="${documents.size() == 0}" style="text-align: center; padding: 3rem; color: var(--text-muted); border: 1px dashed var(--border); border-radius: 12px; background: #f8fafc;">
-        <i class="fa-solid fa-microscope" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+        <i class="fa-regular fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
         <h4>NO DOCUMENTS ANALYZED</h4>
-        <p>Please upload documents on the dashboard to visualize feature extraction.</p>
+        <p>Please upload and run analysis to view live extraction data.</p>
     </div>
 
     <div th:each="doc : ${documents}" style="border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
@@ -196,7 +269,8 @@ body {
                 <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-align-left"></i> Raw Tokens (Sample)</h5>
                 <div>
                     <span class="chip" th:each="t, iterStat : ${doc.tokens}" th:if="${iterStat.index < 25}" th:text="${t}"></span>
-                    <span th:if="${doc.tokens.size() > 25}" style="color:var(--text-muted); font-size:0.8rem; margin-left: 0.5rem; font-weight:600;">... [[${doc.tokens.size() - 25}]] more</span>
+                    <span th:if="${doc.tokens != null and doc.tokens.size() > 25}" style="color:var(--text-muted); font-size:0.8rem; margin-left: 0.5rem; font-weight:600;">... [[${doc.tokens.size() - 25}]] more</span>
+                    <span th:if="${doc.tokens == null}" style="color:var(--text-muted); font-size:0.85rem;">Run Analysis to populate tokens.</span>
                 </div>
             </div>
             <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border); border-top: 4px solid var(--accent);">
@@ -205,13 +279,12 @@ body {
                     <span class="chip chip-opt" th:each="tf : ${doc.optimizedFeatures}">
                         <strong th:text="${tf.term}"></strong> <span class="freq-badge" th:text="${tf.frequency}"></span>
                     </span>
+                    <span th:if="${doc.optimizedFeatures == null}" style="color:var(--text-muted); font-size:0.85rem;">Run Analysis to populate features.</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-        </th:block>
-    </div>
+</div>
 </body>
 </html>
