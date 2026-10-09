@@ -1,9 +1,7 @@
 package com.documentcategorization.controller;
 import com.documentcategorization.model.Document;
 import com.documentcategorization.model.PipelineStage;
-import com.documentcategorization.preprocessing.PreprocessingService;
-import com.documentcategorization.features.FeatureExtractionService;
-import com.documentcategorization.features.FeatureOptimizationService;
+import com.documentcategorization.service.AnalysisService;
 import com.documentcategorization.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,21 +14,22 @@ import java.util.UUID;
 @Controller
 public class DocumentController {
     private final DocumentService documentService;
-    private final PreprocessingService preprocessingService;
-    private final FeatureExtractionService featureExtractionService;
-    private final FeatureOptimizationService featureOptimizationService;
-    private final com.documentcategorization.graph.GraphService graphService;
+    private final AnalysisService analysisService;
+
     @Autowired
-    public DocumentController(DocumentService documentService, PreprocessingService preprocessingService, FeatureExtractionService featureExtractionService, FeatureOptimizationService featureOptimizationService, com.documentcategorization.graph.GraphService graphService) {
-        this.documentService = documentService; this.preprocessingService = preprocessingService; this.featureExtractionService = featureExtractionService; this.featureOptimizationService = featureOptimizationService; this.graphService = graphService;
+    public DocumentController(DocumentService documentService, AnalysisService analysisService) {
+        this.documentService = documentService; 
+        this.analysisService = analysisService;
     }
+
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("documentCount", documentService.getAllDocuments().size());
-        model.addAttribute("featureCount", documentService.getAllDocuments().stream().mapToInt(d -> d.getOptimizedFeatures().size()).sum());
+        model.addAttribute("featureCount", documentService.getAllDocuments().stream().mapToInt(d -> d.getOptimizedFeatures() != null ? d.getOptimizedFeatures().size() : 0).sum());
         model.addAttribute("documents", documentService.getAllDocuments());
         return "index";
     }
+
     @PostMapping("/upload")
     public String uploadFiles(@RequestParam("files") MultipartFile[] files, RedirectAttributes attrs) {
         for (MultipartFile f : files) {
@@ -42,16 +41,36 @@ public class DocumentController {
                 doc.setFileType(f.getContentType());
                 doc.setFileSize(f.getSize());
                 doc.setRawText(new String(f.getBytes(), StandardCharsets.UTF_8));
-                preprocessingService.preprocess(doc); doc.setCurrentStage(PipelineStage.PREPROCESSED);
-                featureExtractionService.extractFeatures(doc); doc.setCurrentStage(PipelineStage.FEATURES_EXTRACTED);
-                featureOptimizationService.optimizeFeatures(doc); doc.setCurrentStage(PipelineStage.CATEGORIZED);
+                doc.setCurrentStage(PipelineStage.UPLOADED);
                 documentService.addDocument(doc);
             } catch (Exception e) {}
         }
         return "redirect:/";
     }
+
+    @PostMapping("/run-analysis")
+    public String runAnalysis(RedirectAttributes attrs) {
+        if (documentService.getAllDocuments().isEmpty()) {
+            attrs.addFlashAttribute("error", "No documents available. Upload documents before running analysis.");
+            return "redirect:/";
+        }
+        analysisService.runFullAnalysis();
+        return "redirect:/";
+    }
+
     @PostMapping("/clear")
-    public String clearAll() { documentService.clearAllDocuments(); return "redirect:/"; }
+    public String clearAll() { 
+        documentService.clearAllDocuments(); 
+        analysisService.reset();
+        return "redirect:/"; 
+    }
+
     @PostMapping("/delete")
-    public String delete(@RequestParam("id") String id) { documentService.deleteDocument(id); return "redirect:/"; }
+    public String delete(@RequestParam("id") String id) { 
+        documentService.deleteDocument(id); 
+        // Note: In a real system, deleting a document might invalidate the current analysis.
+        // We'll reset it to keep the state clean.
+        analysisService.reset();
+        return "redirect:/"; 
+    }
 }

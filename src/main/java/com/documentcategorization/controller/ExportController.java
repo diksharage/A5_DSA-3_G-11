@@ -1,9 +1,7 @@
 package com.documentcategorization.controller;
-import com.documentcategorization.categorization.CategoryService;
-import com.documentcategorization.graph.DocumentGraph;
-import com.documentcategorization.graph.GraphService;
 import com.documentcategorization.model.CategoryResult;
 import com.documentcategorization.model.Document;
+import com.documentcategorization.service.AnalysisService;
 import com.documentcategorization.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -13,11 +11,10 @@ import java.util.*;
 @Controller
 public class ExportController {
     private final DocumentService documentService;
-    private final GraphService graphService;
-    private final CategoryService categoryService;
+    private final AnalysisService analysisService;
     @Autowired
-    public ExportController(DocumentService documentService, GraphService graphService, CategoryService categoryService) {
-        this.documentService = documentService; this.graphService = graphService; this.categoryService = categoryService;
+    public ExportController(DocumentService documentService, AnalysisService analysisService) {
+        this.documentService = documentService; this.analysisService = analysisService;
     }
     @GetMapping("/export")
     public String exportPage(org.springframework.ui.Model model) { 
@@ -27,21 +24,33 @@ public class ExportController {
         } catch(Exception e) { model.addAttribute("jsonPreview", "{}"); }
         return "export";
     }
-    @GetMapping(value = "/api/export/json")
+    @GetMapping(value = "/api/export/json", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> exportJson() { 
         Map<String, Object> exportData = generateExportData(); 
-        return new ResponseEntity<>(exportData, HttpStatus.OK); 
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=categorization-results.json");
+        return new ResponseEntity<>(exportData, headers, HttpStatus.OK); 
     } 
     private Map<String, Object> generateExportData() {
         Map<String, Object> exportData = new LinkedHashMap<>();
         List<Document> docs = documentService.getAllDocuments();
-        DocumentGraph graph = graphService.buildGraph(docs, graphService.getCurrentThreshold());
-        List<CategoryResult> categories = categoryService.identifyCategories(graph.findConnectedComponents());
         exportData.put("project", "Optimization Framework for Document Categorization");
         exportData.put("totalDocuments", docs.size());
-        exportData.put("totalEdges", graph.getEdgeCount());
-        exportData.put("totalCategories", categories.size());
-        exportData.put("categories", categories);
+        
+        if (analysisService.getGraph() != null) {
+            exportData.put("totalEdges", analysisService.getGraph().getEdgeCount());
+        } else {
+            exportData.put("totalEdges", 0);
+        }
+        
+        if (analysisService.getCategories() != null) {
+            exportData.put("totalCategories", analysisService.getCategories().size());
+            exportData.put("categories", analysisService.getCategories());
+        } else {
+            exportData.put("totalCategories", 0);
+            exportData.put("categories", new ArrayList<>());
+        }
+        
         return exportData;
     }
 }

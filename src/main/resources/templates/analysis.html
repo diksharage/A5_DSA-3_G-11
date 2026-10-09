@@ -158,7 +158,7 @@ body {
     </div>
     
     <div class="main-wrapper">
-        <th:block th:with="graph=${@graphService.buildGraph(@documentService.getAllDocuments(), @graphService.getCurrentThreshold())}, categories=${@categoryService.identifyCategories(graph.findConnectedComponents())}">
+        <th:block th:with="graph=${@graphService.buildGraph(@documentService.getAllDocuments(), @graphService.getCurrentThreshold())}, categories=${@analysisService.categories}">
             
 <style>
 .flow-diagram { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 2rem; }
