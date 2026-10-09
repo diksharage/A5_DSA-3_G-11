@@ -239,8 +239,9 @@ body {
             <i class="fa-solid fa-file-arrow-up"></i>
             <h3>DROP DOCUMENTS HERE</h3>
             <p>Drag & drop files here<br>or<br><span class="browse-btn">Browse Files</span></p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">Supported formats: TXT, PDF, DOCX</p>
             <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm" style="display:none;">
-                <input type="file" id="fileInput" name="files" multiple accept=".txt" onchange="document.getElementById('uploadForm').submit()">
+                <input type="file" id="fileInput" name="files" multiple accept=".txt,.pdf,.docx" onchange="document.getElementById('uploadForm').submit()">
             </form>
         </div>
         <div style="margin-top: 1.5rem;" th:if="${documents.size() > 0}">
@@ -278,7 +279,10 @@ body {
                             <div style="width:32px; height:32px; background:#eff6ff; color:#3b82f6; border-radius:6px; display:flex; align-items:center; justify-content:center;"><i class="fa-regular fa-file-lines"></i></div>
                             <div>
                                 <a th:href="'/document/' + ${doc.id}" style="font-weight: 600; color: var(--accent); text-decoration: none;" th:text="${doc.originalFilename}"></a>
-                                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;" th:text="'ID: ' + ${#strings.substring(doc.id,0,8)}"></div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">
+                                    <span th:text="${doc.fileType != null ? doc.fileType : 'Unknown Type'}"></span>
+                                    <span> &bull; ID: </span><span th:text="${#strings.substring(doc.id,0,8)}"></span>
+                                </div>
                             </div>
                         </div>
                     </td>

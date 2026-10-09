@@ -38,3 +38,6 @@ __pycache__/
 
 ### MacOS ###
 .DS_Store
+*.txt
+*.zip
+*.py

@@ -1,80 +1,98 @@
 # Optimization Framework for Document Categorization
 
-A deterministic Data Structures and Algorithms (DSA) engine for automatic document feature extraction, similarity analysis, and robust text categorization.
+## 1. Project Title
+Optimization Framework for Document Categorization: A DSA-Based Document Processing, Feature Optimization and Categorization System
 
-## Project Overview
-This project is an advanced algorithmic framework built using Java and Spring Boot to categorize large unstructured text documents automatically. It completely avoids black-box Machine Learning or LLMs, and strictly relies on foundational DSA concepts like custom hash mapping, exact string matching, set intersection (Jaccard similarity), and graph traversals.
+## 2. Project Overview
+This project is a dynamic, high-performance web application designed to automatically categorize documents using pure Data Structures and Algorithms (DSA) without relying on Machine Learning or external NLP APIs. It performs text extraction, feature optimization, similarity analysis, and graph-based clustering to logically group related documents and assign dynamic category labels.
 
-## Problem Statement
-The exponential growth of digital documents requires fast, explainable, and deterministic categorization methods. Traditional manual sorting is time-consuming, while modern ML models lack transparency ("black-box") and demand massive computing resources. We need an explainable, graph-theoretic approach to accurately group similar documents together based on their dominant extracted features.
+## 3. Problem Statement
+Categorizing large volumes of text manually is inefficient and prone to human error. While modern Machine Learning models can solve this, they require massive datasets, powerful hardware, and introduce a 'black-box' opacity. There is a strong academic and practical need for a fully deterministic, transparent categorization system built purely from foundational computer science principles and mathematical evaluations.
 
-## Objectives
-- Build a lightweight, scalable document processor in Java.
-- Implement efficient exact string matching algorithms to locate patterns within large corpora.
-- Optimize high-frequency terms using Timsort.
-- Construct an adjacency-list based document graph using Jaccard Similarity.
-- Traverse the graph (BFS/DFS) to discover connected document clusters and output deterministic categories.
+## 4. Objectives
+* Build a 100% custom Java DSA engine for document processing.
+* Accept diverse file formats (TXT, PDF, DOCX) and unify them into a single processing pipeline.
+* Implement a memory-efficient HashMap to catalog term frequencies.
+* Filter noise and isolate dominant topics using a custom (U \log U)$ Merge Sort algorithm.
+* Construct an adjacency list graph based on Jaccard Similarity evaluations.
+* Traverse the graph using BFS and DFS to isolate Connected Components.
+* Generate contextual, dynamic labels strictly based on isolated dominant features.
 
-## System Architecture
-The application runs entirely on a Java Spring Boot backend:
-1. **File Upload Controller:** Receives and streams unstructured `txt` files.
-2. **Analysis Orchestrator:** Global service managing the Pipeline execution state.
-3. **Thymeleaf Frontend:** Server-side rendered views dynamically mapping the true Java state visually.
+## 5. Key Features
+* **Multi-Format Extraction:** Supports .txt, .pdf, and .docx document parsing.
+* **Pure DSA Pipeline:** No database, no ML, no LLMs. Fully in-memory state.
+* **Dynamic Similarity Matrix:** Real-time matrix calculating overlap between all document subsets.
+* **Graph Visualization:** Visually charts the undirected relationships between document nodes.
+* **Full Transparency:** Provides an interactive Document Details breakdown and a JSON Export representation.
 
-## DSA Algorithms
-The framework exclusively relies on the following core DSA strategies:
-- **Feature Storage:** `HashMap` / `ArrayList` mapping Term Frequencies.
-- **Sorting:** `Timsort` ($O(N \log N)$) to extract Dominant Features.
-- **String Searching:** Naive, KMP ($O(N+M)$), Z-Algorithm ($O(N+M)$), Rabin-Karp ($O(N+M)$), Aho-Corasick Automaton ($O(N+M+Z)$).
-- **Similarity Evaluation:** Jaccard Set Overlap.
-- **Topology:** Hash-based Adjacency Lists mapping the Document Graph.
-- **Graph Traversal:** Breadth-First Search (BFS) and Depth-First Search (DFS) for component detection.
+## 6. System Architecture
+1. **Upload Layer:** Spring Boot Controller parsing multipart files.
+2. **Extraction Layer:** Apache Tika isolates raw string content.
+3. **Preprocessing Layer:** Converts to lowercase, strips punctuation, applies O(1) HashSet stop-word filtering.
+4. **Feature Layer:** Counts frequencies via Chaining Hash Map, isolates Top 15 via Merge Sort.
+5. **Graph Layer:** Mathematically computes Jaccard overlaps to build an Adjacency List.
+6. **Traversal Layer:** BFS maps Connected Components to cluster documents.
 
-## Processing Workflow
-1. **Document Extraction** - Raw byte streams read into memory buffers.
-2. **Preprocessing** - Case normalization, punctuation stripping, and stop-word filtering.
-3. **Feature Extraction** - Frequency mapping of distinct tokens.
-4. **Feature Optimization** - Discarding low-value noise and sorting dominant traits.
-5. **Similarity Matrix** - $N \times N$ calculation of structural overlap across all files.
-6. **Graph Construction** - Linking sufficient similarity scores as weighted edges.
-7. **BFS / DFS** - Traversal mapping of Disjoint Connected Components.
-8. **Categorization** - Rationale generation and human-readable label assignment.
+## 7. Technology Stack
+* **Backend:** Java 21, Spring Boot 3, Maven
+* **Frontend:** Thymeleaf, HTML5, CSS3, JavaScript
+* **Text Extraction:** Apache Tika Core
+* **Deployment:** GitHub, Render (PaaS)
 
-## Technology Stack
-- **Backend:** Java 21, Spring Boot 3
-- **Build Tool:** Maven
-- **Frontend:** Thymeleaf, HTML5, Vanilla CSS
-- **Visualization:** Mermaid.js (for Dynamic Graph Drawing)
+## 8. DSA Algorithms Used
+* **Custom Merge Sort:** (U \log U)$ isolating dominant features.
+* **Chaining Hash Map:** (1)$ amortized term mapping.
+* **Jaccard Similarity:** Mathematical set intersection over union.
+* **Adjacency List:** (V + E)$ graph memory representation.
+* **Breadth-First Search (BFS):** Graph traversal and component isolation.
+* **Depth-First Search (DFS):** Alternative graph traversal mapping.
+* **String Matching Algorithms:** Naive, KMP, Z-Algorithm, Rabin-Karp, Aho-Corasick.
 
-## How to Run
-### Prerequisites
-- JDK 17 or newer
-- Maven (optional, wrapper is included)
+## 9. Processing Workflow
+Upload -> Text Extraction -> Tokenization -> Stop-word Filter -> Feature Mapping -> Merge Sort Optimization -> Jaccard Network Plotting -> BFS Component Clustering -> Dynamic Category Labeling
 
-### Local Execution
-Clone the repository and run the application locally using the Maven wrapper:
-```bash
-./mvnw spring-boot:run
-```
-*(On Windows, use `.\mvnw spring-boot:run`)*
+## 10. File Support
+* **.TXT:** Standard UTF-8 Text
+* **.PDF:** Portable Document Format (extracted natively via Tika)
+* **.DOCX:** Microsoft Word Format (extracted natively via Tika)
 
-The server will automatically start on `http://localhost:8080`.
+## 11. Similarity Method
+**Jaccard Index:** (A,B) = \frac{|A \cap B|}{|A \cup B|}$
+Evaluates the mathematical intersection divided by the union of the Top 15 optimized features of two documents. Only documents exceeding a configurable threshold > 0.1 are granted a graph edge.
 
-## Testing
-- Upload `.txt` test files using the dashboard interface.
-- Select the `Run Full Analysis` execution hook to monitor pipeline variables.
-- Navigate to the `String Algorithms` view to run KMP/Aho-Corasick side-by-side performance comparisons.
+## 12. Graph-Based Grouping
+Documents serve as Vertices. Similarities $> 0.1$ act as undirected Edges. The system builds a bidirectional Adjacency List to map traversable relationships in memory.
 
-## Complexity
-- **Time Complexity (Overall Pipeline):** $O(N \log N)$ governed by Feature Sorting and $O(V + E)$ for Category generation.
-- **Space Complexity:** $O(V^2)$ for the Similarity Matrix constraint check, and $O(V + E)$ for the Graph Adjacency List.
+## 13. Dynamic Category Identification
+Categories are **not hardcoded**. The system aggregates the features of every document trapped within a BFS Connected Component, merges them, and extracts the top dominant terms to synthetically generate a label (e.g. Agriculture / Tractor / Farming).
 
-## Deployment
-The framework is fully containerized and compatible with Render.com using native Java execution.
-- **Build Command:** `./mvnw clean package -DskipTests`
-- **Start Command:** `java -jar target/optimization-framework-0.0.1-SNAPSHOT.jar`
+## 14. Complexity Analysis
+* **Feature Processing:** Time (U \log U)$, Space (U)$
+* **Jaccard Matrix:** Time (N^2)$, Space (N^2)$
+* **Graph Traversal (BFS):** Time (V + E)$, Space (V)$
+* **Aho-Corasick Automaton:** Time (N + M + Z)$
 
-## Team Members
-**Section 5, CSE**
-- **Rage Diksha** – 2510030249
-- **Nethi Greeshma** – 2510030250
+## 15. How to Run Locally
+1. Ensure **Java 21** and **Maven** are installed.
+2. Clone the repository.
+3. Run ./mvnw clean package in the root directory.
+4. Run java -jar target/optimization-framework-0.0.1-SNAPSHOT.jar
+5. Navigate to http://localhost:8080.
+
+## 16. Testing
+The system maintains strict regression stability across all inputs. End-to-end tests validate that clearing documents safely resets single-source-of-truth states, algorithms scale flawlessly across independent topologies, and JSON exports accurately model cyclic graph hierarchies safely.
+
+## 17. Screenshots section
+*(Screenshots can be placed in src/main/resources/static/images/ and linked here. Includes Dashboard, Graph View, and Document Breakdown.)*
+
+## 18. Deployment section
+The application is fully configured for cloud deployment on **Render**. It binds automatically to Render\'s dynamic $PORT environment variable and executes directly via the Maven-built executable JAR file.
+
+## 19. Limitations
+* In-memory graph processing is heavily bounded by JVM Heap limits. Extreme inputs (>1000s of massive texts) will require optimization or database offloading.
+* Pure Jaccard similarity treats synonyms as disjoint features (e.g., doctor and physician will not match) due to the strict omission of AI embeddings.
+
+## 20. Team Members
+**Rage Diksha** – 2510030249
+**Nethi Greeshma** – 2510030250
+*Section 5, CSE*

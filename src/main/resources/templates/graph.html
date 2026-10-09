@@ -239,8 +239,13 @@ body {
             <div class="mermaid" th:if="${graph.adjacencyList.size() > 0 and graph.edgeCount > 0}">
             graph TD
             <th:block th:each="entry : ${graph.adjacencyList}">
+                <th:block th:if="${entry.value.isEmpty()}">
+                    [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]]
+                </th:block>
                 <th:block th:each="neighbor : ${entry.value}">
-                    [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]] ---|[[${#numbers.formatDecimal(@similarityService.calculateJaccardSimilarity(entry.key, neighbor), 1, 2)}]]| [[${#strings.replace(neighbor.originalFilename, '.txt', '')}]]
+                    <th:block th:if="${entry.key.id.compareTo(neighbor.id) < 0}">
+                        [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]] ---|[[${#numbers.formatDecimal(@similarityService.calculateJaccardSimilarity(entry.key, neighbor), 1, 2)}]]| [[${#strings.replace(neighbor.originalFilename, '.txt', '')}]]
+                    </th:block>
                 </th:block>
             </th:block>
             </div>

@@ -179,10 +179,15 @@ body {
 <div class="card">
     <div class="card-header" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
         <h3 class="card-title" style="border:none; margin:0;"><i class="fa-solid fa-file-code"></i> EXPORT RESULTS</h3>
-        <a href="/api/export/json" class="btn-primary" style="background-color: var(--success);"><i class="fa-solid fa-download"></i> Download JSON Results</a>
+        <a th:if="${error == null}" href="/api/export/json" class="btn-primary" style="background-color: var(--success);"><i class="fa-solid fa-download"></i> Download JSON Results</a>
+        <button th:if="${error != null}" disabled class="btn-primary" style="background-color: #cbd5e1; cursor: not-allowed;"><i class="fa-solid fa-download"></i> Download Unavailable</button>
     </div>
     
-    <div style="background: #0B1120; border-radius: 12px; border: 1px solid #1e293b; margin-top: 1.5rem; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
+    <div th:if="${error != null}" style="text-align: center; padding: 2rem; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; margin-top: 1.5rem; font-weight: 500;">
+        <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${error == null}" style="background: #0B1120; border-radius: 12px; border: 1px solid #1e293b; margin-top: 1.5rem; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
         <div style="background: #1e293b; padding: 0.75rem 1.5rem; display: flex; gap: 0.5rem; border-bottom: 1px solid #0f172a;">
             <div style="width:12px; height:12px; border-radius:50%; background:#ef4444;"></div>
             <div style="width:12px; height:12px; border-radius:50%; background:#f59e0b;"></div>
