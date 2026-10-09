@@ -158,17 +158,17 @@ body {
     </div>
     
     <div class="main-wrapper">
-        <th:block th:with="graph=${@graphService.buildGraph(@documentService.getAllDocuments(), @graphService.getCurrentThreshold())}, categories=${@analysisService.categories}">
-            
+        
 <div class="hero"><div class="hero-content"><h1>Categorization <span class="hero-highlight">Complete</span></h1><p>Final algorithmic clustering derived from BFS connected components and aggregated group feature dominance.</p></div></div>
 
 <div class="card" style="margin-bottom: 2rem;">
     <div style="display: flex; gap: 3rem; padding: 1rem;">
         <div><div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Documents</div><div style="font-size: 2rem; font-weight: 700; color: var(--text-main);" th:text="${documentCount}">0</div></div>
         <div><div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Groups</div><div style="font-size: 2rem; font-weight: 700; color: var(--text-main);" th:text="${categories.size()}">0</div></div>
-        <div><div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Graph Relationships</div><div style="font-size: 2rem; font-weight: 700; color: var(--text-main);" th:text="${graph.edgeCount}">0</div></div>
+        <div><div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Graph Relationships</div><div style="font-size: 2rem; font-weight: 700; color: var(--text-main);" th:text="${graph != null ? graph.edgeCount / 2 : 0}">0</div></div>
     </div>
 </div>
+
 
 <div style="display: grid; gap: 2rem;">
     <div th:each="category : ${categories}" style="background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); overflow: hidden;">
@@ -180,36 +180,59 @@ body {
             <span class="badge badge-success" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-check-circle"></i> Categorized</span>
         </div>
         
-        <div style="padding: 2rem; display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem;">
+        <div style="padding: 2rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem;">
+            <!-- Documents Column -->
             <div>
-                <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Documents in Subgraph</h5>
+                <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Documents</h5>
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                     <div th:each="doc : ${category.documents}" style="background: #f1f5f9; padding: 0.75rem 1rem; border-radius: 6px; font-weight: 500; font-size: 0.9rem; color: var(--text-main); display: flex; align-items: center; gap: 0.75rem;"><i class="fa-regular fa-file-lines" style="color:var(--accent);"></i> <span th:text="${doc.originalFilename}"></span></div>
                 </div>
             </div>
+            
+            <!-- Features Column -->
             <div>
                 <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Dominant Features</h5>
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <span th:each="tf : ${category.dominantFeatures}" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem; font-family: monospace; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
-                        <strong th:text="${tf.term}"></strong> <span style="opacity: 0.6; font-size: 0.8rem; margin-left: 0.25rem;" th:text="'(' + ${tf.frequency} + ')'"></span>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <span th:each="tf : ${category.dominantFeatures}" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; font-family: monospace; display: block;">
+                        <strong th:text="${tf.term}"></strong> <span style="opacity: 0.6; font-size: 0.8rem; float: right;" th:text="'(' + ${tf.frequency} + ')'"></span>
                     </span>
+                    <div th:if="${category.dominantFeatures.size() == 0}" style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No features found.</div>
+                </div>
+            </div>
+
+            <!-- Similarity Info Column -->
+            <div>
+                <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Similarity / Group Info</h5>
+                <div style="background: #f8fafc; border: 1px dashed var(--border); border-radius: 8px; padding: 1rem; font-size: 0.9rem;">
+                    <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);"><i class="fa-solid fa-link" style="width: 20px;"></i> Threshold:</span>
+                        <strong style="color: var(--text-main);" th:text="${threshold}"></strong>
+                    </div>
+                    <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);"><i class="fa-solid fa-circle-nodes" style="width: 20px;"></i> Vertices:</span>
+                        <strong style="color: var(--text-main);" th:text="${category.documents.size()}"></strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);"><i class="fa-solid fa-chart-network" style="width: 20px;"></i> Graph Edges:</span>
+                        <strong style="color: var(--text-main);">Connected Component</strong>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div style="background: #f8fafc; padding: 1.5rem 2rem; border-top: 1px solid var(--border); font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
-            <i class="fa-solid fa-microchip" style="margin-right: 0.5rem; color: var(--accent);"></i> <strong style="color: var(--text-main);">Explainability Rationale:</strong> <span th:text="${category.reason}"></span>
+        <!-- Explanation Rationale -->
+        <div style="background: #0f172a; padding: 1.5rem 2rem; color: #f8fafc; font-size: 0.95rem; line-height: 1.6;">
+            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; font-weight: 700;"><i class="fa-solid fa-lightbulb" style="color: #38bdf8; margin-right: 0.5rem;"></i> Reason</div>
+            <span th:text="${category.reason}"></span>
         </div>
     </div>
 </div>
-
 <div th:if="${categories.size() == 0}" class="card" style="text-align: center; padding: 4rem;">
     <i class="fa-solid fa-layer-group" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
     <h4>NO RESULTS GENERATED</h4>
     <p class="text-muted">Upload and process documents to see categorization groupings.</p>
 </div>
 
-        </th:block>
     </div>
 </body>
 </html>
