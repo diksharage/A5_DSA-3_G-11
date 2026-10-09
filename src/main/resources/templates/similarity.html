@@ -127,7 +127,21 @@ body {
 .dsa-chip i { font-size: 1.25rem; color: var(--text-muted); }
 .dsa-chip:hover i { color: var(--accent); }
 
+    
+        /* Final Polish Global CSS */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .modern-table td { word-break: break-all; max-width: 300px; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .lab-container { grid-template-columns: 1fr !important; }
+            .res-grid { grid-template-columns: 1fr !important; }
+            .hero h1 { font-size: 1.75rem; }
+            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        }
     </style>
+
 </head>
 <body>
     <div class="sidebar">
@@ -169,7 +183,21 @@ body {
 .heat-label { font-family: 'Inter', sans-serif; font-weight: 600; background: #f8fafc; text-align: left !important; color: var(--text-main); font-size: 0.85rem; }
 .legend { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
 .legend-bar { width: 150px; height: 12px; background: linear-gradient(90deg, #f1f5f9 0%, #1e3a8a 100%); border-radius: 999px; }
-</style>
+
+        /* Final Polish Global CSS */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .modern-table td { word-break: break-all; max-width: 300px; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .lab-container { grid-template-columns: 1fr !important; }
+            .res-grid { grid-template-columns: 1fr !important; }
+            .hero h1 { font-size: 1.75rem; }
+            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        }
+    </style>
+
 <div class="hero"><div class="hero-content"><h1>Similarity <span class="hero-highlight">Matrix</span></h1><p>Jaccard overlap analysis across optimized document features.</p></div></div>
 
 

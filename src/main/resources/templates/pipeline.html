@@ -127,7 +127,21 @@ body {
 .dsa-chip i { font-size: 1.25rem; color: var(--text-muted); }
 .dsa-chip:hover i { color: var(--accent); }
 
+    
+        /* Final Polish Global CSS */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .modern-table td { word-break: break-all; max-width: 300px; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .lab-container { grid-template-columns: 1fr !important; }
+            .res-grid { grid-template-columns: 1fr !important; }
+            .hero h1 { font-size: 1.75rem; }
+            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        }
     </style>
+
 </head>
 <body>
     <div class="sidebar">
@@ -172,7 +186,21 @@ body {
 .vt-item.completed .vt-card { border-left: 4px solid var(--success); }
 .vt-status { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 0.4rem 1rem; border-radius: 999px; background: #f1f5f9; color: #64748b; }
 .vt-item.completed .vt-status { background: #ecfdf5; color: #059669; }
-</style>
+
+        /* Final Polish Global CSS */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .modern-table td { word-break: break-all; max-width: 300px; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .lab-container { grid-template-columns: 1fr !important; }
+            .res-grid { grid-template-columns: 1fr !important; }
+            .hero h1 { font-size: 1.75rem; }
+            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        }
+    </style>
+
 <div class="hero"><div class="hero-content"><h1>Processing <span class="hero-highlight">Pipeline</span></h1><p>Algorithmic execution timeline of the categorization engine.</p></div></div>
 
 <div class="card">

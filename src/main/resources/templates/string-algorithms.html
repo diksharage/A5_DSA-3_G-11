@@ -127,7 +127,21 @@ body {
 .dsa-chip i { font-size: 1.25rem; color: var(--text-muted); }
 .dsa-chip:hover i { color: var(--accent); }
 
+    
+        /* Final Polish Global CSS */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .modern-table td { word-break: break-all; max-width: 300px; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .lab-container { grid-template-columns: 1fr !important; }
+            .res-grid { grid-template-columns: 1fr !important; }
+            .hero h1 { font-size: 1.75rem; }
+            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        }
     </style>
+
 </head>
 <body>
     <div class="sidebar">
@@ -179,7 +193,21 @@ body {
 .res-box { background: #1e293b; padding: 1.25rem; border-radius: 8px; border: 1px solid #334155; }
 .res-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
 .res-val { font-family: monospace; font-size: 1.1rem; color: #38bdf8; word-break: break-all; }
-</style>
+
+        /* Final Polish Global CSS */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .modern-table td { word-break: break-all; max-width: 300px; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .lab-container { grid-template-columns: 1fr !important; }
+            .res-grid { grid-template-columns: 1fr !important; }
+            .hero h1 { font-size: 1.75rem; }
+            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        }
+    </style>
+
 <div class="hero"><div class="hero-content"><h1>String Algorithm <span class="hero-highlight">Laboratory</span></h1><p>Execute and analyze exact string matching implementations.</p></div></div>
 
 <div class="algo-cards">
@@ -280,7 +308,8 @@ body {
         <i class="fa-solid fa-lightbulb" style="color: #f59e0b; margin-right: 0.5rem;"></i>
         <strong>Observation:</strong> Correct algorithms should produce the same matching positions for the same input, while their internal approaches and complexity differ.
     </div>
-    <table class="modern-table">
+    <div class="table-responsive">
+<table class="modern-table">
         <thead>
             <tr>
                 <th>Algorithm</th>
@@ -300,6 +329,7 @@ body {
             </tr>
         </tbody>
     </table>
+</div>
 </div>
 
         </th:block>

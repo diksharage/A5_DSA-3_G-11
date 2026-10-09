@@ -127,7 +127,21 @@ body {
 .dsa-chip i { font-size: 1.25rem; color: var(--text-muted); }
 .dsa-chip:hover i { color: var(--accent); }
 
+    
+        /* Final Polish Global CSS */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .modern-table td { word-break: break-all; max-width: 300px; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .lab-container { grid-template-columns: 1fr !important; }
+            .res-grid { grid-template-columns: 1fr !important; }
+            .hero h1 { font-size: 1.75rem; }
+            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        }
     </style>
+
 </head>
 <body>
     <div class="sidebar">

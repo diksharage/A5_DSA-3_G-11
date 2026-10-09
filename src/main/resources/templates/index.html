@@ -127,7 +127,21 @@ body {
 .dsa-chip i { font-size: 1.25rem; color: var(--text-muted); }
 .dsa-chip:hover i { color: var(--accent); }
 
+    
+        /* Final Polish Global CSS */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .modern-table td { word-break: break-all; max-width: 300px; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .lab-container { grid-template-columns: 1fr !important; }
+            .res-grid { grid-template-columns: 1fr !important; }
+            .hero h1 { font-size: 1.75rem; }
+            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        }
     </style>
+
 </head>
 <body>
     <div class="sidebar">
@@ -243,8 +257,8 @@ body {
         <div class="card-header">
             <h3 class="card-title"><i class="fa-solid fa-folder-open"></i> Current Document Collection</h3>
             <div style="display:flex; gap:0.5rem; align-items:center;">
-                <form action="/run-analysis" method="post" style="margin:0;"><button class="btn-primary" style="background:var(--accent); border:none; padding:0.5rem 1rem; color:white; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-play"></i> RUN FULL ANALYSIS</button></form>
-                <form action="/clear" method="post" style="margin:0;"><button class="btn-danger" style="background:#ef4444; border:none; padding:0.5rem 1rem; color:white; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash-can"></i> Clear Data</button></form>
+                <form action="/run-analysis" method="post" style="margin:0;"><button type="submit" class="btn-primary"><i class="fa-solid fa-play"></i> RUN FULL ANALYSIS</button></form>
+                <form action="/clear" method="post" style="margin:0;"><button type="submit" class="btn-danger"><i class="fa-solid fa-trash-can"></i> Clear Data</button></form>
             </div>
         </div>
         
@@ -254,7 +268,8 @@ body {
             <p style="margin: 0;">Upload documents to begin the DSA processing pipeline.</p>
         </div>
         
-        <table class="modern-table" th:if="${documents.size() > 0}">
+        <div class="table-responsive">
+<table class="modern-table" th:if="${documents.size() > 0}">
             <thead><tr><th>Document</th><th>Size</th><th>Features</th><th>Status</th><th>Action</th></tr></thead>
             <tbody>
                 <tr th:each="doc : ${documents}">
@@ -279,22 +294,11 @@ body {
                 </tr>
             </tbody>
         </table>
+</div>
     </div>
 </div>
 
-<div class="card" style="margin-top: 1rem;">
-    <div class="card-header" style="margin-bottom: 1rem;"><h3 class="card-title"><i class="fa-solid fa-microchip"></i> Active DSA Engine Components</h3></div>
-    <div class="dsa-grid">
-        <div class="dsa-chip"><i class="fa-solid fa-hashtag"></i> Hash Frequency</div>
-        <div class="dsa-chip"><i class="fa-solid fa-magnifying-glass"></i> Naive Matching</div>
-        <div class="dsa-chip"><i class="fa-solid fa-forward-step"></i> KMP Algorithm</div>
-        <div class="dsa-chip"><i class="fa-solid fa-z"></i> Z Algorithm</div>
-        <div class="dsa-chip"><i class="fa-solid fa-fingerprint"></i> Rabin-Karp</div>
-        <div class="dsa-chip"><i class="fa-solid fa-network-wired"></i> Aho-Corasick</div>
-        <div class="dsa-chip"><i class="fa-solid fa-ruler-combined"></i> Jaccard Similarity</div>
-        <div class="dsa-chip"><i class="fa-solid fa-diagram-project"></i> Graph BFS/DFS</div>
-    </div>
-</div>
+
 
         </th:block>
     </div>
