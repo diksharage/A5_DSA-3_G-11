@@ -1,74 +1,80 @@
 # Optimization Framework for Document Categorization
 
+A deterministic Data Structures and Algorithms (DSA) engine for automatic document feature extraction, similarity analysis, and robust text categorization.
+
 ## Project Overview
-This project is an automated, unsupervised document clustering engine built entirely using deterministic Data Structures and Algorithms (DSA). It replaces traditional black-box Machine Learning models with a lightweight, mathematically explainable approach to process, compare, and group text documents.
+This project is an advanced algorithmic framework built using Java and Spring Boot to categorize large unstructured text documents automatically. It completely avoids black-box Machine Learning or LLMs, and strictly relies on foundational DSA concepts like custom hash mapping, exact string matching, set intersection (Jaccard similarity), and graph traversals.
+
+## Problem Statement
+The exponential growth of digital documents requires fast, explainable, and deterministic categorization methods. Traditional manual sorting is time-consuming, while modern ML models lack transparency ("black-box") and demand massive computing resources. We need an explainable, graph-theoretic approach to accurately group similar documents together based on their dominant extracted features.
 
 ## Objectives
-* Discover groups of related documents automatically without any training data.
-* Ensure 100% explainability for why documents were grouped together.
-* Demonstrate the power and efficiency of core DSA concepts in solving Natural Language Processing (NLP) problems.
-
-## DSA Algorithms Used
-* **Hash Maps (Hashing):** Instant $O(1)$ token frequency counting during feature extraction.
-* **Timsort:** Fast $O(K \log K)$ sorting for algorithmic dimensionality reduction (Feature Optimization).
-* **Jaccard Similarity:** Mathematical calculation of set intersections over unions.
-* **Adjacency List:** Graph topology representation for document relationships.
-* **Breadth-First Search (BFS):** Graph traversal in $O(V + E)$ time to discover connected components (clusters).
-* **String Matching (Naive, KMP, Z-Algorithm, Rabin-Karp, Aho-Corasick):** Implemented in the Algorithm Laboratory for pattern matching and analysis.
+- Build a lightweight, scalable document processor in Java.
+- Implement efficient exact string matching algorithms to locate patterns within large corpora.
+- Optimize high-frequency terms using Timsort.
+- Construct an adjacency-list based document graph using Jaccard Similarity.
+- Traverse the graph (BFS/DFS) to discover connected document clusters and output deterministic categories.
 
 ## System Architecture
-* **Backend:** Java 21, Spring Boot, Maven.
-* **Frontend:** HTML5, CSS3, Thymeleaf (Dynamic rendering).
-* **Storage:** In-memory session state (No database required).
-* **Graph Visualization:** Mermaid.js
+The application runs entirely on a Java Spring Boot backend:
+1. **File Upload Controller:** Receives and streams unstructured `txt` files.
+2. **Analysis Orchestrator:** Global service managing the Pipeline execution state.
+3. **Thymeleaf Frontend:** Server-side rendered views dynamically mapping the true Java state visually.
+
+## DSA Algorithms
+The framework exclusively relies on the following core DSA strategies:
+- **Feature Storage:** `HashMap` / `ArrayList` mapping Term Frequencies.
+- **Sorting:** `Timsort` ($O(N \log N)$) to extract Dominant Features.
+- **String Searching:** Naive, KMP ($O(N+M)$), Z-Algorithm ($O(N+M)$), Rabin-Karp ($O(N+M)$), Aho-Corasick Automaton ($O(N+M+Z)$).
+- **Similarity Evaluation:** Jaccard Set Overlap.
+- **Topology:** Hash-based Adjacency Lists mapping the Document Graph.
+- **Graph Traversal:** Breadth-First Search (BFS) and Depth-First Search (DFS) for component detection.
 
 ## Processing Workflow
-1. **Document Extraction:** Reads raw byte streams into memory.
-2. **Preprocessing:** Normalizes case, removes punctuation and stop-words.
-3. **Feature Extraction:** Generates word frequencies mapped via Custom Hash structures.
-4. **Feature Optimization:** Applies Timsort bounding to retain only high-value dominant terms.
-5. **Similarity Matrix:** Calculates NxN Jaccard overlap metrics across optimized feature sets.
-6. **Graph Construction:** Constructs an Adjacency List linking documents passing the similarity threshold.
-7. **BFS / DFS:** Traverses the graph to discover disjoint connected components.
-8. **Categorization:** Assigns human-readable labels derived from subgroup term dominance.
+1. **Document Extraction** - Raw byte streams read into memory buffers.
+2. **Preprocessing** - Case normalization, punctuation stripping, and stop-word filtering.
+3. **Feature Extraction** - Frequency mapping of distinct tokens.
+4. **Feature Optimization** - Discarding low-value noise and sorting dominant traits.
+5. **Similarity Matrix** - $N \times N$ calculation of structural overlap across all files.
+6. **Graph Construction** - Linking sufficient similarity scores as weighted edges.
+7. **BFS / DFS** - Traversal mapping of Disjoint Connected Components.
+8. **Categorization** - Rationale generation and human-readable label assignment.
 
 ## Technology Stack
-* Java Spring Boot
-* Maven
-* Thymeleaf
-* HTML/CSS/JavaScript
-* Docker (for Render deployment)
+- **Backend:** Java 21, Spring Boot 3
+- **Build Tool:** Maven
+- **Frontend:** Thymeleaf, HTML5, Vanilla CSS
+- **Visualization:** Mermaid.js (for Dynamic Graph Drawing)
 
-## How to Run Locally
-1. Clone the repository: `git clone https://github.com/GreeshmaNethi/A5_DSA-3_G-11.git`
-2. Enter the directory: `cd A5_DSA-3_G-11`
-3. Run the Spring Boot application using the Maven wrapper:
-   * Windows: `.\mvnw spring-boot:run`
-   * Mac/Linux: `./mvnw spring-boot:run`
-4. Open your browser and navigate to `http://localhost:8080`.
+## How to Run
+### Prerequisites
+- JDK 17 or newer
+- Maven (optional, wrapper is included)
 
-## How to Upload Documents
-1. Navigate to the Dashboard (`/`).
-2. Drag and drop `.txt` files into the upload zone or click "Browse Files".
-3. The system will automatically process the documents through the pipeline.
-4. Use the "Clear Data" button to completely reset the application state for a fresh session.
+### Local Execution
+Clone the repository and run the application locally using the Maven wrapper:
+```bash
+./mvnw spring-boot:run
+```
+*(On Windows, use `.\mvnw spring-boot:run`)*
 
-## How the Categorization Works
-Categories are dynamically generated by finding the "Connected Components" in the document graph using Breadth-First Search (BFS). Documents that share a high Jaccard Similarity score share an edge. If a group of documents are connected, they form a category. The label for the category is automatically generated by aggregating the most dominant optimized features within that specific cluster.
+The server will automatically start on `http://localhost:8080`.
 
-## Project Structure
-* `src/main/java/.../algorithms/` - Exact string matching algorithm implementations.
-* `src/main/java/.../features/` - Hashing and Timsort logic for feature extraction.
-* `src/main/java/.../graph/` - Adjacency list and BFS/DFS logic.
-* `src/main/java/.../similarity/` - Jaccard similarity mathematical logic.
-* `src/main/resources/templates/` - Dynamic Thymeleaf HTML UI templates.
+## Testing
+- Upload `.txt` test files using the dashboard interface.
+- Select the `Run Full Analysis` execution hook to monitor pipeline variables.
+- Navigate to the `String Algorithms` view to run KMP/Aho-Corasick side-by-side performance comparisons.
+
+## Complexity
+- **Time Complexity (Overall Pipeline):** $O(N \log N)$ governed by Feature Sorting and $O(V + E)$ for Category generation.
+- **Space Complexity:** $O(V^2)$ for the Similarity Matrix constraint check, and $O(V + E)$ for the Graph Adjacency List.
 
 ## Deployment
-This project is configured for seamless deployment on Render.com using the included `Dockerfile`.
-* **Build Command:** `./mvnw clean package -DskipTests`
-* **Start Command:** `java -jar target/optimization-framework-0.0.1-SNAPSHOT.jar`
+The framework is fully containerized and compatible with Render.com using native Java execution.
+- **Build Command:** `./mvnw clean package -DskipTests`
+- **Start Command:** `java -jar target/optimization-framework-0.0.1-SNAPSHOT.jar`
 
 ## Team Members
-* **Rage Diksha** – 2510030249
-* **Nethi Greeshma** – 2510030250
-* Section 5, CSE
+**Section 5, CSE**
+- **Rage Diksha** – 2510030249
+- **Nethi Greeshma** – 2510030250
