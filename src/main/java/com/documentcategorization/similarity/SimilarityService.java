@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 @Service
 public class SimilarityService {
     public double calculateJaccardSimilarity(Document d1, Document d2) {
+        if (d1.getOptimizedFeatures() == null || d2.getOptimizedFeatures() == null) return 0.0;
         Set<String> s1 = d1.getOptimizedFeatures().stream().map(TermFrequency::getTerm).collect(Collectors.toSet());
         Set<String> s2 = d2.getOptimizedFeatures().stream().map(TermFrequency::getTerm).collect(Collectors.toSet());
         if (s1.isEmpty() && s2.isEmpty()) return 0.0;

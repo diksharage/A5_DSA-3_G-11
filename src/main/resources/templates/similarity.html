@@ -158,8 +158,7 @@ body {
     </div>
     
     <div class="main-wrapper">
-        <th:block th:with="graph=${@graphService.buildGraph(@documentService.getAllDocuments(), @graphService.getCurrentThreshold())}, categories=${@analysisService.categories}">
-            
+        
 <style>
 .heat-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
 .heat-table th { background: #f8fafc; padding: 1.25rem 1rem; text-align: center; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
@@ -173,6 +172,26 @@ body {
 </style>
 <div class="hero"><div class="hero-content"><h1>Similarity <span class="hero-highlight">Matrix</span></h1><p>Jaccard overlap analysis across optimized document features.</p></div></div>
 
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; gap: 2rem; align-items: flex-start;">
+        <div style="flex: 1;">
+            <h3 style="margin-top: 0; color: var(--text-main); font-size: 1.1rem;"><i class="fa-solid fa-calculator" style="color: var(--accent); margin-right: 0.5rem;"></i> Similarity Algorithm</h3>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1rem;">
+                <strong>Jaccard Similarity</strong>
+            </div>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">
+                <i class="fa-solid fa-circle-info" style="color: var(--accent);"></i> Higher similarity indicates greater overlap between optimized document features.
+            </p>
+        </div>
+        <div style="flex: 1;">
+            <h3 style="margin-top: 0; color: var(--text-main); font-size: 1.1rem;"><i class="fa-solid fa-subscript" style="color: var(--accent); margin-right: 0.5rem;"></i> Formula</h3>
+            <div style="background: #1e293b; color: #38bdf8; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 1.1rem; text-align: center; font-weight: bold; border: 1px solid #334155;">
+                J(A,B) = |A &cap; B| / |A &cup; B|
+            </div>
+        </div>
+    </div>
+</div>
 <div class="card">
     <div th:if="${documents.size() > 0}">
         <div style="overflow-x: auto;">
@@ -216,7 +235,6 @@ body {
     });
 </script>
 
-        </th:block>
     </div>
 </body>
 </html>
