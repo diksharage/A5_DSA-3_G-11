@@ -1,4 +1,5 @@
 package com.documentcategorization.controller;
+
 import com.documentcategorization.model.Document;
 import com.documentcategorization.model.PipelineStage;
 import com.documentcategorization.service.AnalysisService;
@@ -9,8 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.nio.charset.StandardCharsets;
+
 import java.util.UUID;
+
 @Controller
 public class DocumentController {
     private final DocumentService documentService;
@@ -19,7 +21,7 @@ public class DocumentController {
 
     @Autowired
     public DocumentController(DocumentService documentService, AnalysisService analysisService, com.documentcategorization.service.TextExtractionService extractionService) {
-        this.documentService = documentService; 
+        this.documentService = documentService;
         this.analysisService = analysisService;
         this.extractionService = extractionService;
     }
@@ -48,7 +50,7 @@ public class DocumentController {
                     attrs.addFlashAttribute("error", "No extractable text found in " + f.getOriginalFilename());
                     continue;
                 }
-                
+
                 Document doc = new Document();
                 doc.setId(UUID.randomUUID().toString());
                 doc.setOriginalFilename(f.getOriginalFilename());
@@ -63,7 +65,8 @@ public class DocumentController {
             }
         }
         if (successCount > 0) {
-            // Document added, optionally set a success message
+            // Invalidate previous graph/category results until Run Full Analysis is executed on the updated document set
+            analysisService.reset();
         }
         return "redirect:/";
     }
@@ -79,19 +82,17 @@ public class DocumentController {
     }
 
     @PostMapping("/clear")
-    public String clearAll() { 
-        documentService.clearAllDocuments(); 
+    public String clearAll() {
+        documentService.clearAllDocuments();
         analysisService.reset();
-        return "redirect:/"; 
+        return "redirect:/";
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam("id") String id) { 
-        documentService.deleteDocument(id); 
-        // Note: In a real system, deleting a document might invalidate the current analysis.
-        // We'll reset it to keep the state clean.
+    public String delete(@RequestParam("id") String id) {
+        documentService.deleteDocument(id);
         analysisService.reset();
-        return "redirect:/"; 
+        return "redirect:/";
     }
 
     @GetMapping("/document")
@@ -115,7 +116,6 @@ public class DocumentController {
         model.addAttribute("doc", doc);
         model.addAttribute("allDocs", documentService.getAllDocuments());
 
-        // Find category and group
         String category = "Uncategorized (Run Analysis)";
         String group = "None";
         java.util.List<Document> groupDocs = new java.util.ArrayList<>();
@@ -133,15 +133,12 @@ public class DocumentController {
         model.addAttribute("group", group);
         model.addAttribute("groupDocs", groupDocs);
 
-        // Find similar documents
         java.util.List<Document> similarDocs = new java.util.ArrayList<>();
         if (analysisService.getGraph() != null && analysisService.getGraph().getAdjacencyList().containsKey(doc)) {
             similarDocs = analysisService.getGraph().getAdjacencyList().get(doc);
         }
         model.addAttribute("similarDocs", similarDocs);
-        
-        // Pass SimilarityService for calculating precise values dynamically
-        // Since @similarityService is available in Thymeleaf via Spring bean, we don't strictly need to pass it, but we can pass Threshold.
+
         return "document-details";
     }
 }

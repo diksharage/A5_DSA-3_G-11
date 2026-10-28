@@ -2,10 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Categorization Results - Optimization Framework</title>
+    <title>Categorization Results &amp; Explainability - Optimization Framework</title>
     <style>
-        
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
 :root {
@@ -19,12 +18,15 @@
     --secondary: #4C1D95;
     --accent: #2563EB;
     --success: #10B981;
+    --warning: #F59E0B;
     --error: #EF4444;
     --card-bg: #ffffff;
     --text-main: #0f172a;
     --text-muted: #64748b;
     --border: #e2e8f0;
 }
+
+* { box-sizing: border-box; }
 
 body {
     font-family: 'Inter', sans-serif;
@@ -53,95 +55,88 @@ body {
 .nav-item.active i { color: var(--accent); }
 
 /* Main Content */
-.main-wrapper { flex: 1; margin-left: 280px; padding: 3rem 4rem; display: flex; flex-direction: column; gap: 2rem; max-width: 1400px; }
+.main-wrapper { flex: 1; margin-left: 280px; padding: 2.5rem 3.5rem; display: flex; flex-direction: column; gap: 2rem; max-width: 1480px; }
 
-/* Dashboard Hero */
-.hero { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-.hero-content h1 { margin: 0 0 0.5rem 0; font-size: 2.25rem; font-weight: 300; color: var(--text-main); letter-spacing: -0.5px; }
+/* Hero */
+.hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+.hero-content h1 { margin: 0 0 0.5rem 0; font-size: 2.15rem; font-weight: 300; color: var(--text-main); letter-spacing: -0.5px; }
 .hero-highlight { font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero-content p { margin: 0; font-size: 1.1rem; color: var(--text-muted); max-width: 600px; line-height: 1.5; }
-.system-status { display: flex; align-items: center; gap: 0.5rem; background: #fff; padding: 0.5rem 1rem; border-radius: 999px; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-.status-dot { width: 8px; height: 8px; background-color: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); }
+.hero-content p { margin: 0; font-size: 1rem; color: var(--text-muted); max-width: 740px; line-height: 1.5; }
 
 /* Cards */
-.card { background: var(--card-bg); border-radius: 12px; padding: 2rem; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-.card-title { margin: 0; font-size: 1.1rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 0.75rem; }
+.card { background: var(--card-bg); border-radius: 12px; padding: 1.75rem 2rem; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem; }
+.card-title { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 0.65rem; }
 .card-title i { color: var(--accent); }
 
-/* Metrics */
-.metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-.metric-card { background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 1.25rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-.metric-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-.metric-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-.mi-1 { background: #eff6ff; color: #3b82f6; }
-.mi-2 { background: #f5f3ff; color: #8b5cf6; }
-.mi-3 { background: #ecfeff; color: #06b6d4; }
-.mi-4 { background: #ecfdf5; color: #10b981; }
-.metric-info h4 { margin: 0 0 0.25rem 0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; }
-.metric-info .val { margin: 0 0 0.25rem 0; font-size: 1.75rem; font-weight: 700; color: var(--text-main); line-height: 1; }
-.metric-info p { margin: 0; font-size: 0.75rem; color: var(--text-muted); }
-
-/* Horizontal Pipeline */
-.horiz-pipeline { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; background: #f8fafc; padding: 1.5rem 2rem; border-radius: 8px; border: 1px solid #e2e8f0; }
-.hp-node { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; z-index: 2; width: 60px; }
-.hp-circle { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
-.hp-circle i { font-size: 0.6rem; color: transparent; }
-.hp-label { font-size: 0.65rem; font-weight: 700; color: #64748b; text-transform: uppercase; text-align: center; }
-.hp-line { flex: 1; height: 2px; background: #cbd5e1; margin: -20px 0 0 0; z-index: 1; transition: background 0.3s; }
-.hp-node.completed .hp-circle { background: var(--success); border-color: var(--success); }
-.hp-node.completed .hp-circle i { color: #fff; }
-.hp-node.completed .hp-label { color: var(--success); }
-.hp-line.completed { background: var(--success); }
-
-/* Drag Drop Upload */
-.upload-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 3rem 2rem; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s; }
-.upload-zone:hover { border-color: var(--accent); background: #eff6ff; }
-.upload-zone i { font-size: 3rem; color: #94a3b8; margin-bottom: 1rem; transition: color 0.2s; }
-.upload-zone:hover i { color: var(--accent); }
-.upload-zone h3 { margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 700; letter-spacing: 1px; color: var(--text-main); }
-.upload-zone p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
-.browse-btn { display: inline-block; margin-top: 1rem; background: #fff; border: 1px solid var(--border); padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-
-/* Tables */
-.modern-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9rem; }
-.modern-table th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); }
-.modern-table th:first-child { border-left: 1px solid var(--border); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-.modern-table th:last-child { border-right: 1px solid var(--border); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
-.modern-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-.modern-table tr:hover td { background: #f8fafc; }
-.badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 0.25rem; }
+/* Badges & Buttons */
+.badge { padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.4px; display: inline-flex; align-items: center; gap: 0.35rem; }
 .badge-success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
 .badge-primary { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.badge-purple { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+.badge-amber { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+.badge-slate { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
-/* Buttons */
-.btn-primary { background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
-.btn-primary:hover { background: #1d4ed8; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.3); }
-.btn-danger { background: #fff; color: var(--error); border: 1px solid #fecaca; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-.btn-danger:hover { background: #fef2f2; border-color: var(--error); }
+.btn-primary { background: var(--accent); color: #fff; border: none; padding: 0.55rem 1.1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem; }
+.btn-primary:hover { background: #1d4ed8; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.25); }
+.btn-outline { background: #fff; color: var(--text-main); border: 1px solid var(--border); padding: 0.5rem 0.95rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); background: #eff6ff; }
 
-/* DSA Grid */
-.dsa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
-.dsa-chip { background: #f8fafc; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-main); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: transform 0.2s; }
-.dsa-chip:hover { transform: translateY(-2px); border-color: var(--accent); color: var(--accent); }
-.dsa-chip i { font-size: 1.25rem; color: var(--text-muted); }
-.dsa-chip:hover i { color: var(--accent); }
+/* Summary Metrics Bar */
+.metrics-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+.metric-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.metric-box-icon { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+.metric-box-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 0.2rem; }
+.metric-box-val { font-size: 1.65rem; font-weight: 800; color: var(--text-main); line-height: 1.1; font-family: 'JetBrains Mono', monospace; }
+.metric-box-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 0.2rem; }
 
-    
-        /* Final Polish Global CSS */
-        .table-responsive { width: 100%; overflow-x: auto; }
-        .modern-table td { word-break: break-all; max-width: 300px; }
-        @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; }
-            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
-            .main-wrapper { padding: 1rem; overflow-y: visible; }
-            .lab-container { grid-template-columns: 1fr !important; }
-            .res-grid { grid-template-columns: 1fr !important; }
-            .hero h1 { font-size: 1.75rem; }
-            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
-        }
+/* Pipeline Flow Banner */
+.derivation-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; margin-top: 0.75rem; }
+.flow-step { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; position: relative; }
+.flow-step-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 0.72rem; font-weight: 700; margin-bottom: 0.4rem; }
+.flow-step-title { font-size: 0.82rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; }
+.flow-step-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+/* Group Card Layout */
+.group-card { background: #fff; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.04); overflow: hidden; margin-bottom: 2rem; }
+.group-card-header { background: linear-gradient(90deg, #f8fafc 0%, #eff6ff 100%); padding: 1.35rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.group-card-grid { padding: 1.75rem 2rem; display: grid; grid-template-columns: 1fr 1.15fr 1.15fr; gap: 1.75rem; align-items: start; }
+.group-col-title { margin: 0 0 0.85rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: flex; align-items: center; gap: 0.45rem; }
+.group-col-title i { color: var(--accent); }
+
+/* Feature Chips & Tables */
+.dom-feature-row { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.7rem 0.9rem; margin-bottom: 0.55rem; }
+.dom-feature-top { display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #1e3a8a; font-weight: 700; }
+.dom-feature-contrib { font-size: 0.75rem; color: #475569; margin-top: 0.3rem; font-family: 'JetBrains Mono', monospace; }
+
+.edge-card { background: #f8fafc; border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 0.75rem 0.95rem; margin-bottom: 0.6rem; font-size: 0.84rem; }
+.edge-card-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--text-main); }
+.edge-card-meta { font-size: 0.76rem; color: var(--text-muted); margin-top: 0.3rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+.shared-term-chip { display: inline-block; background: #e0e7ff; color: #3730a3; padding: 0.1rem 0.45rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600; margin: 0.15rem 0.2rem 0 0; }
+
+.transitive-box { background: #fffbeb; border: 1px solid #fde68a; border-left: 3px solid #f59e0b; border-radius: 8px; padding: 0.75rem 0.95rem; margin-top: 0.65rem; font-size: 0.8rem; color: #92400e; }
+
+/* Tables */
+.modern-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.86rem; }
+.modern-table th { background: #f8fafc; padding: 0.85rem 1rem; text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 700; border-bottom: 2px solid var(--border); border-top: 1px solid var(--border); }
+.modern-table td { padding: 0.9rem 1rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+.modern-table tr:hover td { background: #f8fafc; }
+
+.feat-pill { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.5rem; border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; margin: 0.15rem; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; }
+.feat-pill.dominant { background: #dcfce7; border-color: #86efac; color: #166534; font-weight: 700; }
+
+@media (max-width: 1100px) {
+    .group-card-grid { grid-template-columns: 1fr; }
+    .derivation-flow { grid-template-columns: 1fr; }
+    .metrics-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+    body { flex-direction: column; overflow-y: auto; }
+    .sidebar { width: 100%; height: auto; position: relative; }
+    .main-wrapper { margin-left: 0; padding: 1.25rem; }
+    .metrics-strip { grid-template-columns: 1fr; }
+}
     </style>
-
 </head>
 <body>
     <div class="sidebar">
@@ -154,98 +149,486 @@ body {
         </div>
         <div class="nav-container">
             <div class="nav-section">OVERVIEW</div>
-            <a href="/" class="nav-item "><i class="fa-solid fa-gauge"></i> Dashboard & Upload</a>
+            <a href="/" class="nav-item"><i class="fa-solid fa-gauge"></i> Dashboard &amp; Upload</a>
             
             <div class="nav-section">PROCESSING</div>
-            <a href="/pipeline" class="nav-item "><i class="fa-solid fa-bars-progress"></i> Processing Pipeline</a>
-            <a href="/analysis" class="nav-item "><i class="fa-solid fa-microscope"></i> DSA Analysis</a>
+            <a href="/pipeline" class="nav-item"><i class="fa-solid fa-bars-progress"></i> Processing Pipeline</a>
+            <a href="/analysis" class="nav-item"><i class="fa-solid fa-microscope"></i> DSA Analysis</a>
+            <a href="/walkthrough" class="nav-item"><i class="fa-solid fa-shoe-prints"></i> Algorithm Walkthrough</a>
             
             <div class="nav-section">ALGORITHMS</div>
-            <a href="/string-algorithms" class="nav-item "><i class="fa-solid fa-code"></i> String Algorithms</a>
-            <a href="/similarity" class="nav-item "><i class="fa-solid fa-not-equal"></i> Similarity Matrix</a>
-            <a href="/graph" class="nav-item "><i class="fa-solid fa-network-wired"></i> Graph Visualization</a>
+            <a href="/string-algorithms" class="nav-item"><i class="fa-solid fa-code"></i> String Algorithms</a>
+            <a href="/similarity" class="nav-item"><i class="fa-solid fa-not-equal"></i> Similarity Matrix</a>
+            <a href="/graph" class="nav-item"><i class="fa-solid fa-network-wired"></i> Graph Visualization</a>
             
             <div class="nav-section">RESULTS</div>
-            <a href="/results" class="nav-item active"><i class="fa-solid fa-layer-group"></i> Results & Categories</a>
-            <a href="/export" class="nav-item "><i class="fa-solid fa-file-export"></i> Export JSON</a>
+            <a href="/results" class="nav-item active"><i class="fa-solid fa-layer-group"></i> Results &amp; Categories</a>
+            <a href="/export" class="nav-item"><i class="fa-solid fa-file-export"></i> Export JSON</a>
         </div>
     </div>
     
     <div class="main-wrapper">
         
-<div class="hero"><div class="hero-content"><h1>Categorization <span class="hero-highlight">Complete</span></h1><p>Final algorithmic clustering derived from BFS connected components and aggregated group feature dominance.</p></div></div>
-
-<div class="card" style="margin-bottom: 2rem;">
-    <div style="display: flex; gap: 3rem; padding: 1rem;">
-        <div><div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Documents</div><div style="font-size: 2rem; font-weight: 700; color: var(--text-main);" th:text="${documentCount}">0</div></div>
-        <div><div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Groups</div><div style="font-size: 2rem; font-weight: 700; color: var(--text-main);" th:text="${categories.size()}">0</div></div>
-        <div><div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Graph Relationships</div><div style="font-size: 2rem; font-weight: 700; color: var(--text-main);" th:text="${graph != null ? graph.edgeCount / 2 : 0}">0</div></div>
-    </div>
-</div>
-
-
-<div style="display: grid; gap: 2rem;">
-    <div th:each="category : ${categories}" style="background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); overflow: hidden;">
-        <div style="background: linear-gradient(90deg, #f8fafc 0%, #fff 100%); padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; margin-bottom: 0.25rem;" th:text="${category.groupId}"></div>
-                <h3 style="margin: 0; font-size: 1.5rem; color: var(--text-main);"><i class="fa-solid fa-folder-tree" style="color: var(--text-muted); margin-right: 0.5rem;"></i> <span th:text="${category.categoryLabel}"></span></h3>
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Explainable <span class="hero-highlight">Category Results</span></h1>
+                <p>Transparent, backend-derived breakdown of every connected component, dominant feature aggregation, Jaccard similarity edge, and document membership reason.</p>
             </div>
-            <span class="badge badge-success" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-check-circle"></i> Categorized</span>
+            <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+                <a href="/similarity" class="btn-outline"><i class="fa-solid fa-table-cells"></i> Similarity Heatmap</a>
+                <a href="/graph" class="btn-outline"><i class="fa-solid fa-circle-nodes"></i> Interactive Graph</a>
+                <a href="/walkthrough?algo=components" class="btn-primary"><i class="fa-solid fa-shoe-prints"></i> Component Walkthrough</a>
+            </div>
         </div>
-        
-        <div style="padding: 2rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem;">
-            <!-- Documents Column -->
-            <div>
-                <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Documents</h5>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <div th:each="doc : ${category.documents}" style="background: #f1f5f9; padding: 0.75rem 1rem; border-radius: 6px; font-weight: 500; font-size: 0.9rem; color: var(--text-main); display: flex; align-items: center; gap: 0.75rem;"><i class="fa-regular fa-file-lines" style="color:var(--accent);"></i> <a th:href="'/document/' + ${doc.id}" style="text-decoration: none; color: var(--text-main);" th:text="${doc.originalFilename}"></a></div>
-                </div>
-            </div>
-            
-            <!-- Features Column -->
-            <div>
-                <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Dominant Features</h5>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <span th:each="tf : ${category.dominantFeatures}" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; font-family: monospace; display: block;">
-                        <strong th:text="${tf.term}"></strong> <span style="opacity: 0.6; font-size: 0.8rem; float: right;" th:text="'(' + ${tf.frequency} + ')'"></span>
-                    </span>
-                    <div th:if="${category.dominantFeatures.size() == 0}" style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No features found.</div>
-                </div>
-            </div>
 
-            <!-- Similarity Info Column -->
-            <div>
-                <h5 style="margin: 0 0 1rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Similarity / Group Info</h5>
-                <div style="background: #f8fafc; border: 1px dashed var(--border); border-radius: 8px; padding: 1rem; font-size: 0.9rem;">
-                    <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-                        <span style="color: var(--text-muted);"><i class="fa-solid fa-link" style="width: 20px;"></i> Threshold:</span>
-                        <strong style="color: var(--text-main);" th:text="${threshold}"></strong>
-                    </div>
-                    <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-                        <span style="color: var(--text-muted);"><i class="fa-solid fa-circle-nodes" style="width: 20px;"></i> Vertices:</span>
-                        <strong style="color: var(--text-main);" th:text="${category.documents.size()}"></strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--text-muted);"><i class="fa-solid fa-chart-network" style="width: 20px;"></i> Graph Edges:</span>
-                        <strong style="color: var(--text-main);">Connected Component</strong>
-                    </div>
+        <!-- Summary Metrics Strip -->
+        <div class="metrics-strip">
+            <div class="metric-box">
+                <div class="metric-box-icon" style="background: #eff6ff; color: #2563eb;"><i class="fa-regular fa-file-lines"></i></div>
+                <div>
+                    <div class="metric-box-label">Documents</div>
+                    <div class="metric-box-val" id="metricDocumentCount" th:text="${documentCount}">0</div>
+                    <div class="metric-box-sub">Graph Vertices (V)</div>
+                </div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-box-icon" style="background: #ecfdf5; color: #059669;"><i class="fa-solid fa-layer-group"></i></div>
+                <div>
+                    <div class="metric-box-label">Category Groups</div>
+                    <div class="metric-box-val" id="metricGroupCount" th:text="${categories.size()}">0</div>
+                    <div class="metric-box-sub">Connected Components (C)</div>
+                </div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-box-icon" style="background: #f5f3ff; color: #7c3aed;"><i class="fa-solid fa-bezier-curve"></i></div>
+                <div>
+                    <div class="metric-box-label">Graph Relationships</div>
+                    <div class="metric-box-val" id="metricEdgeCount" th:text="${edgeCount}">0</div>
+                    <div class="metric-box-sub">Undirected Edges (E)</div>
+                </div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-box-icon" style="background: #fffbeb; color: #d97706;"><i class="fa-solid fa-sliders"></i></div>
+                <div>
+                    <div class="metric-box-label">Jaccard Threshold</div>
+                    <div class="metric-box-val" id="metricThreshold" th:text="${threshold}">0.15</div>
+                    <div class="metric-box-sub">J(A,B) = |A &cap; B| / |A &cup; B|</div>
                 </div>
             </div>
         </div>
-        
-        <!-- Explanation Rationale -->
-        <div style="background: #0f172a; padding: 1.5rem 2rem; color: #f8fafc; font-size: 0.95rem; line-height: 1.6;">
-            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; font-weight: 700;"><i class="fa-solid fa-lightbulb" style="color: #38bdf8; margin-right: 0.5rem;"></i> Reason</div>
-            <span th:text="${category.reason}"></span>
+
+        <!-- Pre-analysis Banner if documents uploaded but not analyzed -->
+        <div th:if="${documentCount > 0 and !analysisCompleted}" class="card" style="background: #fffbeb; border-color: #fde68a; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="color: #92400e; font-size: 0.92rem;">
+                <i class="fa-solid fa-triangle-exclamation" style="margin-right: 0.5rem;"></i>
+                <strong>Analysis Not Run Yet:</strong> <span th:text="${documentCount}"></span> document(s) are uploaded in memory. Run Full Analysis to compute connected components and generate explainable categories.
+            </div>
+            <form action="/run-analysis" method="post" style="margin: 0;">
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-play"></i> Run Full Analysis</button>
+            </form>
         </div>
-    </div>
-</div>
-<div th:if="${categories.size() == 0}" class="card" style="text-align: center; padding: 4rem;">
-    <i class="fa-solid fa-layer-group" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
-    <h4>NO RESULTS GENERATED</h4>
-    <p class="text-muted">Upload and process documents to see categorization groupings.</p>
-</div>
+
+        <!-- How Category Labels & Groups Are Generated (Algorithmic Pipeline Explanation) -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fa-solid fa-gears"></i> How Categories &amp; Groupings Are Generated (Category-Independent DSA Pipeline)</h3>
+                <span class="badge badge-primary"><i class="fa-solid fa-check-double"></i> Zero Hardcoded Topics</span>
+            </div>
+            <p style="margin: 0 0 0.75rem 0; font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+                This system does not use predefined topic dictionaries, machine learning, or hardcoded <code>if/else</code> rules. Every category group and label is derived deterministically from the uploaded documents using a 5-stage algorithm:
+            </p>
+            <div class="derivation-flow">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <div class="flow-step-title">Connected Component</div>
+                    <div class="flow-step-desc">BFS traverses the document graph (<code th:text="'J(A,B) &ge; ' + ${threshold}"></code>) to isolate each maximal connected subgraph.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <div class="flow-step-title">Aggregate Features</div>
+                    <div class="flow-step-desc">Each member document's Top 15 Merge-Sorted features are pooled and frequencies are summed across the component.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <div class="flow-step-title">Rank Features</div>
+                    <div class="flow-step-desc">Pooled terms are sorted in descending order of total component frequency (with lexicographical A–Z tie-breaking).</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">4</div>
+                    <div class="flow-step-title">Select Dominant (Top 3)</div>
+                    <div class="flow-step-desc">The top <code>min(3, U)</code> highest-frequency terms are selected as the component's dominant descriptors.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">5</div>
+                    <div class="flow-step-title">Generate Category Label</div>
+                    <div class="flow-step-desc">Selected dominant terms are title-cased and joined with <code>" / "</code> (or fallback <code>"Undetermined"</code> if 0 features exist).</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${groupExplanations.size() == 0}" class="card" style="text-align: center; padding: 4rem 2rem;">
+            <i class="fa-solid fa-layer-group" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+            <h3 style="margin: 0 0 0.5rem 0; color: var(--text-main);">NO CATEGORIZATION RESULTS AVAILABLE</h3>
+            <p style="color: var(--text-muted); max-width: 520px; margin: 0 auto 1.5rem auto; font-size: 0.92rem;">
+                Upload TXT, PDF, or DOCX documents on the Dashboard and execute <strong>Run Full Analysis</strong> to view connected components, category label derivations, and grouping explanations.
+            </p>
+            <a href="/" class="btn-primary"><i class="fa-solid fa-upload"></i> Go to Dashboard &amp; Upload</a>
+        </div>
+
+        <!-- SECTION 1: GROUP SUMMARIES & CATEGORY LABEL EXPLANATIONS -->
+        <div th:if="${groupExplanations.size() > 0}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <h2 style="margin: 0; font-size: 1.35rem; font-weight: 700; color: var(--text-main);">
+                    <i class="fa-solid fa-folder-tree" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                    1. Connected Component Group Summaries &amp; Label Derivations
+                </h2>
+                <span style="font-size: 0.82rem; color: var(--text-muted);" th:text="'Showing ' + ${groupExplanations.size()} + ' discovered connected component(s)'"></span>
+            </div>
+
+            <div th:each="grp : ${groupExplanations}" class="group-card" th:id="'group-card-' + ${grp.componentIndex}">
+                <!-- Group Header -->
+                <div class="group-card-header">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
+                            <span class="badge badge-primary" th:text="${grp.groupId}">Group 1</span>
+                            <span class="badge badge-purple" th:text="'Connected Component #' + ${grp.componentIndex}">Connected Component #1</span>
+                            <span th:if="${!grp.isIsolated}" class="badge badge-success">
+                                <i class="fa-solid fa-diagram-project"></i> Multi-Document Connected Cluster
+                            </span>
+                            <span th:if="${grp.isIsolated}" class="badge badge-amber">
+                                <i class="fa-solid fa-circle-dot"></i> Isolated Single-Document Component
+                            </span>
+                            <span th:if="${grp.fallbackUsed}" class="badge badge-slate">
+                                <i class="fa-solid fa-circle-info"></i> Fallback Label Used
+                            </span>
+                        </div>
+                        <h3 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-main);">
+                            <i class="fa-solid fa-tag" style="color: var(--accent); margin-right: 0.4rem; font-size: 1.2rem;"></i>
+                            <span th:text="${grp.categoryLabel}">Category Label</span>
+                        </h3>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+                        <span class="badge badge-slate" th:text="${grp.documentCount} + (${grp.documentCount == 1} ? ' Document' : ' Documents')"></span>
+                        <span class="badge badge-slate" th:text="${grp.internalEdgeCount} + (${grp.internalEdgeCount == 1} ? ' Graph Edge' : ' Graph Edges')"></span>
+                        <a th:if="${grp.documents.size() > 0}" th:href="@{/graph(selectedDocId=${grp.documents[0].id})}" class="btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.76rem;">
+                            <i class="fa-solid fa-network-wired"></i> Highlight in Graph
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3-Column Explainability Breakdown -->
+                <div class="group-card-grid">
+                    
+                    <!-- COLUMN 1: Member Documents & Connected-Component Membership -->
+                    <div>
+                        <h5 class="group-col-title"><i class="fa-regular fa-file-lines"></i> Member Documents &amp; BFS Component</h5>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 1rem;">
+                            <div th:each="docInfo : ${grp.documents}" style="background: #f8fafc; border: 1px solid var(--border); padding: 0.7rem 0.9rem; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+                                    <a th:href="'/document/' + ${docInfo.id}" style="text-decoration: none; color: var(--accent); font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 0.45rem;">
+                                        <i class="fa-regular fa-file-lines"></i>
+                                        <span th:text="${docInfo.filename}">doc.txt</span>
+                                    </a>
+                                    <span class="badge badge-slate" style="font-size: 0.68rem;" th:text="${docInfo.optimizedFeatureCount} + ' top features'"></span>
+                                </div>
+                                <div style="margin-top: 0.35rem; font-size: 0.74rem; color: var(--text-muted);">
+                                    <a th:href="'#doc-explain-' + ${docInfo.id}" style="color: var(--text-muted); text-decoration: underline;">Jump to document membership analysis &darr;</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Connected Component Discovery Box -->
+                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; font-size: 0.82rem;">
+                            <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                                <i class="fa-solid fa-route" style="color: var(--accent);"></i>
+                                Connected-Component Discovery (BFS)
+                            </div>
+                            <div style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                                <strong>BFS Traversal Order:</strong>
+                                <code style="display: block; margin-top: 0.2rem; padding: 0.35rem 0.5rem; background: #fff; border: 1px solid var(--border); border-radius: 5px; color: #0f172a; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;" th:text="${grp.bfsDiscoveryOrderFormatted}"></code>
+                            </div>
+                            <div style="font-size: 0.78rem; color: #334155; line-height: 1.45;" th:text="${grp.connectivityExplanation}"></div>
+                        </div>
+                    </div>
+
+                    <!-- COLUMN 2: Dominant Features & Step-by-Step Category Label Derivation -->
+                    <div>
+                        <h5 class="group-col-title"><i class="fa-solid fa-ranking-star"></i> Category Label Derivation (Top 3 Features)</h5>
+
+                        <!-- Dominant Features Used in Label -->
+                        <div th:if="${grp.dominantFeatures.size() > 0}">
+                            <div th:each="df : ${grp.dominantFeatures}" class="dom-feature-row">
+                                <div class="dom-feature-top">
+                                    <span>
+                                        <span style="background: #2563eb; color: #fff; border-radius: 4px; padding: 0.1rem 0.4rem; font-size: 0.7rem; margin-right: 0.35rem;" th:text="'#' + ${df.rank}">#1</span>
+                                        <strong th:text="${df.term}">term</strong>
+                                        <span style="color: #64748b; font-weight: 500; font-size: 0.78rem;" th:text="'&rarr; &quot;' + ${df.titleTerm} + '&quot;'"></span>
+                                    </span>
+                                    <span class="badge badge-primary" th:text="'Agg Freq: ' + ${df.frequency}">Agg Freq: 5</span>
+                                </div>
+                                <div class="dom-feature-contrib">
+                                    <strong>Member Contributions:</strong> <span th:text="${df.contributionsSummary}">doc1.txt (3) + doc2.txt (2)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fallback Notice if 0 features exist -->
+                        <div th:if="${grp.dominantFeatures.size() == 0}" style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.9rem; border-radius: 8px; font-size: 0.82rem; margin-bottom: 0.75rem;">
+                            <strong><i class="fa-solid fa-circle-exclamation"></i> Fallback Applied (<code>Undetermined</code>):</strong>
+                            No optimized features were extracted from the member document(s), so no dominant terms could be ranked.
+                        </div>
+
+                        <!-- Step-by-Step Derivation Trace for this Group -->
+                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.79rem; line-height: 1.5; color: #334155;">
+                            <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">
+                                <i class="fa-solid fa-list-check" style="color: var(--accent); margin-right: 0.35rem;"></i>
+                                Exact Label Generation Steps for <span th:text="${grp.groupId}"></span>:
+                            </div>
+                            <ol style="margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                                <li><strong>Component Input:</strong> <span th:text="${grp.documentCount}"></span> member document(s) (<span th:text="${#strings.listJoin(grp.documentNames, ', ')}"></span>).</li>
+                                <li><strong>Feature Aggregation:</strong> Summed <span th:text="${grp.totalPooledFeatureEntries}"></span> optimized feature entries into <strong th:text="${grp.totalUniqueAggregatedFeatures}"></strong> unique term(s).</li>
+                                <li><strong>Feature Ranking:</strong> Ranked all <span th:text="${grp.totalUniqueAggregatedFeatures}"></span> term(s) by descending total frequency.</li>
+                                <li><strong>Dominant Selection:</strong> Selected Top <span th:text="${grp.dominantFeatures.size()}"></span> term(s).</li>
+                                <li><strong>Generated Label:</strong> <code style="font-weight: 700; color: var(--accent);" th:text="${grp.categoryLabel}"></code> (<span th:text="${grp.labelExplanation}"></span>)</li>
+                            </ol>
+                        </div>
+
+                        <!-- Collapsible Full Ranked Aggregated Features Table (Top 10) -->
+                        <details th:if="${grp.rankedAggregatedFeatures.size() > 0}" style="margin-top: 0.65rem; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.85rem; font-size: 0.78rem;">
+                            <summary style="cursor: pointer; font-weight: 700; color: var(--accent);">
+                                View Ranked Aggregated Feature Table (Top <span th:text="${grp.rankedAggregatedFeatures.size()}"></span> of <span th:text="${grp.totalUniqueAggregatedFeatures}"></span> unique terms)
+                            </summary>
+                            <div style="margin-top: 0.6rem; overflow-x: auto;">
+                                <table class="modern-table" style="font-size: 0.76rem;">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding: 0.45rem;">Rank</th>
+                                            <th style="padding: 0.45rem;">Term</th>
+                                            <th style="padding: 0.45rem;">Summed Freq</th>
+                                            <th style="padding: 0.45rem;">Document Contributions</th>
+                                            <th style="padding: 0.45rem;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="af : ${grp.rankedAggregatedFeatures}">
+                                            <td style="padding: 0.45rem; font-family: monospace;" th:text="'#' + ${af.rank}"></td>
+                                            <td style="padding: 0.45rem; font-family: monospace; font-weight: 700;" th:text="${af.term}"></td>
+                                            <td style="padding: 0.45rem; font-family: monospace;" th:text="${af.frequency}"></td>
+                                            <td style="padding: 0.45rem; font-family: monospace; color: var(--text-muted);" th:text="${af.contributionsSummary}"></td>
+                                            <td style="padding: 0.45rem;">
+                                                <span th:if="${af.selectedForLabel}" class="badge badge-success" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">Top 3 Label</span>
+                                                <span th:if="${!af.selectedForLabel}" style="color: var(--text-muted); font-size: 0.68rem;">Ranked #<span th:text="${af.rank}"></span></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- COLUMN 3: Relevant Similarity Relationships & Graph Connectivity -->
+                    <div>
+                        <h5 class="group-col-title"><i class="fa-solid fa-link"></i> Similarity Relationships &amp; Graph Edges</h5>
+
+                        <!-- Case A: Component has internal edges -->
+                        <div th:if="${grp.internalEdges.size() > 0}">
+                            <div th:each="edge : ${grp.internalEdges}" class="edge-card">
+                                <div class="edge-card-top">
+                                    <span>
+                                        <span th:text="${edge.docAName}">docA.txt</span>
+                                        <i class="fa-solid fa-arrows-left-right" style="color: var(--accent); margin: 0 0.35rem; font-size: 0.75rem;"></i>
+                                        <span th:text="${edge.docBName}">docB.txt</span>
+                                    </span>
+                                    <span class="badge badge-success" style="font-family: 'JetBrains Mono', monospace;" th:text="'J = ' + ${edge.jaccardFormatted}">J = 0.333</span>
+                                </div>
+                                <div class="edge-card-meta">
+                                    <span>
+                                        Formula: <code th:text="'|A &cap; B| / |A &cup; B| = ' + ${edge.intersectionSize} + ' / ' + ${edge.unionSize} + ' &ge; ' + ${threshold}"></code>
+                                    </span>
+                                    <a th:href="@{/walkthrough(algo='jaccard', docAId=${edge.docAId}, docBId=${edge.docBId})}" style="color: var(--accent); text-decoration: none; font-weight: 600;">
+                                        Verify in Walkthrough &rarr;
+                                    </a>
+                                </div>
+                                <div th:if="${edge.sharedTerms.size() > 0}" style="margin-top: 0.4rem;">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Shared Optimized Features (<span th:text="${edge.sharedTerms.size()}"></span>):</span>
+                                    <div>
+                                        <span th:each="st : ${edge.sharedTerms}" class="shared-term-chip" th:text="${st}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transitive Pairs Notice (when component has >2 docs and some pairs are indirectly connected) -->
+                        <div th:if="${grp.hasTransitivePairs}" class="transitive-box">
+                            <div style="font-weight: 700; margin-bottom: 0.35rem;">
+                                <i class="fa-solid fa-share-nodes"></i> Transitive Graph Connectivity Within Component:
+                            </div>
+                            <div style="margin-bottom: 0.4rem; line-height: 1.4;">
+                                Documents belong to the same group whenever they are reachable via a continuous chain of graph edges, even if a specific pair's direct Jaccard score is below <span th:text="${threshold}"></span>:
+                            </div>
+                            <div th:each="tp : ${grp.transitivePairs}" style="background: rgba(255,255,255,0.75); border: 1px solid #fde68a; border-radius: 6px; padding: 0.45rem 0.65rem; margin-top: 0.35rem; font-family: 'JetBrains Mono', monospace; font-size: 0.73rem;">
+                                <div><strong th:text="${tp.docAName} + ' &dotsquare; ' + ${tp.docBName}"></strong> (Direct J = <span th:text="${tp.jaccardFormatted}"></span> &lt; <span th:text="${threshold}"></span>)</div>
+                                <div style="color: #0f172a; margin-top: 0.15rem;">Connected via BFS Path: <strong th:text="${tp.bfsPathFormatted}"></strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Case B: Isolated Single-Document Component (0 edges) -->
+                        <div th:if="${grp.internalEdges.size() == 0}" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 1rem; font-size: 0.83rem; color: #334155;">
+                            <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+                                <i class="fa-solid fa-unlink" style="color: #64748b; margin-right: 0.35rem;"></i>
+                                0 Graph Edges (Isolated Connected Component)
+                            </div>
+                            <p style="margin: 0 0 0.6rem 0; line-height: 1.45;">
+                                This group contains a single isolated vertex because no pairwise Jaccard similarity score reached the threshold (<code th:text="'&ge; ' + ${threshold}"></code>).
+                            </p>
+                            <div th:if="${grp.closestExternalMatch != null}" style="background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.8rem; font-size: 0.78rem;">
+                                <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.2rem;">Closest External Document Comparison:</div>
+                                <div>
+                                    Compared with <strong th:text="${grp.closestExternalMatch.externalDocName}"></strong>:
+                                    <code style="font-weight: 700; color: #b45309;" th:text="'J = ' + ${grp.closestExternalMatch.jaccardFormatted} + ' (' + ${grp.closestExternalMatch.intersectionSize} + ' / ' + ${grp.closestExternalMatch.unionSize} + ' &lt; ' + ${threshold} + ')'"></code>
+                                </div>
+                            </div>
+                            <div th:if="${grp.closestExternalMatch == null}" style="font-size: 0.78rem; color: var(--text-muted); font-style: italic;">
+                                No other documents are currently uploaded in the workspace for pairwise comparison.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group Explanation Rationale Footer -->
+                <div style="background: #0f172a; padding: 1.25rem 2rem; color: #f8fafc; font-size: 0.9rem; line-height: 1.6;">
+                    <div style="font-size: 0.72rem; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.35rem; font-weight: 700;">
+                        <i class="fa-solid fa-lightbulb" style="margin-right: 0.4rem;"></i> Complete Grouping &amp; Category Explanation (<span th:text="${grp.groupId}"></span>)
+                    </div>
+                    <div th:text="${grp.reason}"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: DOCUMENT-BY-DOCUMENT MEMBERSHIP EXPLANATION -->
+        <div th:if="${documentExplanations.size() > 0}" class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title"><i class="fa-solid fa-user-check"></i> 2. Document-by-Document Membership &amp; Grouping Explanation</h3>
+                    <p style="margin: 0.3rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">
+                        Explains for every individual document its assigned group, generated category label, Top 15 optimized features, similar documents with actual Jaccard values, and how graph connectivity determined its membership.
+                    </p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.76rem; color: var(--text-muted);">
+                    <span class="feat-pill dominant">Highlighted Term</span> = Contributes to Group Top 3 Category Label
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="modern-table" id="documentMembershipTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 16%;">Document &amp; Assigned Group</th>
+                            <th style="width: 15%;">Generated Category Label</th>
+                            <th style="width: 24%;">Top Optimized Features (Merge-Sorted)</th>
+                            <th style="width: 22%;">Similar Documents &amp; Jaccard Values</th>
+                            <th style="width: 23%;">Graph Connectivity &amp; Membership Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="docExp : ${documentExplanations}" th:id="'doc-explain-' + ${docExp.docId}">
+                            <!-- 1. Filename & Group ID -->
+                            <td>
+                                <div style="font-weight: 700; font-size: 0.92rem; margin-bottom: 0.35rem;">
+                                    <a th:href="'/document/' + ${docExp.docId}" style="color: var(--accent); text-decoration: none;">
+                                        <i class="fa-regular fa-file-lines"></i> <span th:text="${docExp.filename}">doc.txt</span>
+                                    </a>
+                                </div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.35rem;">
+                                    <span class="badge badge-primary" th:text="${docExp.groupId}">Group 1</span>
+                                    <span th:if="${docExp.componentIndex > 0}" class="badge badge-purple" th:text="'Comp #' + ${docExp.componentIndex}">Comp #1</span>
+                                </div>
+                                <div style="font-size: 0.74rem; color: var(--text-muted);" th:text="${docExp.membershipBadge}"></div>
+                            </td>
+
+                            <!-- 2. Generated Category Label -->
+                            <td>
+                                <div style="font-weight: 800; color: var(--text-main); font-size: 0.92rem; margin-bottom: 0.35rem;" th:text="${docExp.categoryLabel}">Label</div>
+                                <div th:if="${docExp.matchedDominantTerms.size() > 0}" style="font-size: 0.74rem; color: #059669; font-weight: 600;">
+                                    <i class="fa-solid fa-check"></i> Contributes dominant term(s):
+                                    <span style="font-family: 'JetBrains Mono', monospace;" th:text="${#strings.listJoin(docExp.matchedDominantTerms, ', ')}"></span>
+                                </div>
+                                <div th:if="${docExp.matchedDominantTerms.size() == 0}" style="font-size: 0.74rem; color: var(--text-muted);">
+                                    Label derived from component peers
+                                </div>
+                            </td>
+
+                            <!-- 3. Top Optimized Features -->
+                            <td>
+                                <div th:if="${docExp.optimizedFeatures.size() > 0}">
+                                    <span th:each="ft : ${docExp.optimizedFeatures}"
+                                          class="feat-pill"
+                                          th:classappend="${ft.isGroupDominant ? 'dominant' : ''}"
+                                          th:title="${ft.isGroupDominant ? 'Contributes to Group Top 3 Category Label' : 'Optimized Document Feature'}">
+                                        <span th:text="${ft.term}">term</span>
+                                        <strong style="opacity: 0.75;" th:text="'(' + ${ft.frequency} + ')'">(1)</strong>
+                                    </span>
+                                </div>
+                                <div th:if="${docExp.optimizedFeatures.size() == 0}" style="color: var(--text-muted); font-style: italic; font-size: 0.8rem;">
+                                    No optimized features extracted.
+                                </div>
+                            </td>
+
+                            <!-- 4. Similar Documents & Actual Jaccard Values -->
+                            <td>
+                                <!-- Direct Graph Neighbors -->
+                                <div th:if="${docExp.directNeighbors.size() > 0}" style="display: flex; flex-direction: column; gap: 0.45rem;">
+                                    <div th:each="nbr : ${docExp.directNeighbors}" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.45rem 0.65rem; font-size: 0.78rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
+                                            <a th:href="'/document/' + ${nbr.neighborId}" style="color: #1e40af; text-decoration: none;" th:text="${nbr.neighborName}"></a>
+                                            <span style="font-family: 'JetBrains Mono', monospace; color: #059669;" th:text="'J = ' + ${nbr.jaccardFormatted}"></span>
+                                        </div>
+                                        <div style="font-size: 0.71rem; color: #475569; margin-top: 0.15rem; font-family: 'JetBrains Mono', monospace;">
+                                            |A &cap; B| = <span th:text="${nbr.intersectionSize}"></span>, |A &cup; B| = <span th:text="${nbr.unionSize}"></span>
+                                            (shared: <span th:text="${nbr.sharedTermsSummary}"></span>)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Transitive Component Peers (if any) -->
+                                <div th:if="${docExp.hasTransitivePeers}" style="margin-top: 0.45rem;">
+                                    <div th:each="peer : ${docExp.transitivePeers}" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 0.45rem 0.65rem; font-size: 0.75rem; color: #92400e; margin-bottom: 0.35rem;">
+                                        <div><strong>Transitive Peer:</strong> <span th:text="${peer.peerName}"></span> (Direct J = <span th:text="${peer.jaccardFormatted}"></span>)</div>
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; margin-top: 0.15rem;">Path: <span th:text="${peer.bfsPathFormatted}"></span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Isolated (0 similar documents) -->
+                                <div th:if="${docExp.directNeighbors.size() == 0}" style="font-size: 0.78rem; color: var(--text-muted);">
+                                    <div style="font-weight: 600; color: #64748b; margin-bottom: 0.25rem;">
+                                        <i class="fa-solid fa-ban"></i> None (0 edges &ge; <span th:text="${threshold}"></span>)
+                                    </div>
+                                    <div th:if="${docExp.closestNonNeighbor != null}" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.55rem; font-size: 0.73rem;">
+                                        Max similarity with other docs: <strong th:text="${docExp.closestNonNeighbor.docName}"></strong>
+                                        (<code th:text="'J = ' + ${docExp.closestNonNeighbor.jaccardFormatted} + ' &lt; ' + ${threshold}"></code>)
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- 5. Membership & Graph Connectivity Explanation -->
+                            <td>
+                                <div style="font-size: 0.8rem; color: #1e293b; line-height: 1.5;" th:text="${docExp.membershipExplanation}"></div>
+                                <div style="margin-top: 0.5rem; display: flex; gap: 0.6rem; flex-wrap: wrap; font-size: 0.74rem;">
+                                    <a th:href="@{/graph(selectedDocId=${docExp.docId})}" style="color: var(--accent); text-decoration: none; font-weight: 600;">
+                                        <i class="fa-solid fa-circle-nodes"></i> Inspect Vertex in Graph
+                                    </a>
+                                    <a th:href="'/document/' + ${docExp.docId}" style="color: #475569; text-decoration: none; font-weight: 600;">
+                                        <i class="fa-solid fa-magnifying-glass"></i> Full Document Details
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     </div>
 </body>

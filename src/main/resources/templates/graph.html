@@ -2,146 +2,101 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Graph Visualization - Optimization Framework</title>
+    <title>Interactive Graph Visualization - Optimization Framework</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+        :root {
+            --bg-body: #f8fafc;
+            --sidebar-bg: #0f172a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --purple: #7c3aed;
+            --amber: #d97706;
+            --danger: #ef4444;
+            --card-bg: #ffffff;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 280px; background-color: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+        .brand { padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid #1e293b; }
+        .brand-icon { font-size: 1.8rem; color: var(--accent); }
+        .brand-title { font-weight: 800; font-size: 1.1rem; line-height: 1.2; letter-spacing: -0.5px; }
+        .brand-subtitle { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .nav-container { padding: 1rem 0; flex: 1; }
+        .nav-section { padding: 1rem 1.5rem 0.5rem; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-item:hover { background: #1e293b; color: #fff; }
+        .nav-item.active { background: #1e293b; color: #fff; border-left-color: var(--accent); }
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem; }
 
-:root {
-    --bg-color: #f8fafc;
-    --sidebar-bg: #0B1120;
-    --sidebar-border: #1e293b;
-    --sidebar-text: #94a3b8;
-    --sidebar-text-active: #ffffff;
-    --sidebar-hover: #1e293b;
-    --primary: #0F172A;
-    --secondary: #4C1D95;
-    --accent: #2563EB;
-    --success: #10B981;
-    --error: #EF4444;
-    --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border: #e2e8f0;
-}
+        .main-wrapper { flex: 1; overflow-y: auto; padding: 2rem 3rem; }
+        .hero { margin-bottom: 1.5rem; }
+        .hero h1 { font-size: 2rem; font-weight: 800; color: #0f172a; margin: 0 0 0.4rem 0; letter-spacing: -0.5px; }
+        .hero-highlight { color: var(--accent); }
+        .hero p { color: var(--text-muted); font-size: 0.95rem; margin: 0; }
 
-body {
-    font-family: 'Inter', sans-serif;
-    margin: 0; padding: 0;
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    display: flex; min-height: 100vh;
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='2' fill='%2394A3B8' opacity='0.3'/%3E%3Ccircle cx='80' cy='50' r='1.5' fill='%2394A3B8' opacity='0.3'/%3E%3Ccircle cx='40' cy='90' r='2' fill='%2394A3B8' opacity='0.3'/%3E%3Cline x1='20' y1='20' x2='80' y2='50' stroke='%2394A3B8' stroke-width='0.5' opacity='0.15'/%3E%3Cline x1='80' y1='50' x2='40' y2='90' stroke='%2394A3B8' stroke-width='0.5' opacity='0.15'/%3E%3Cline x1='40' y1='90' x2='20' y2='20' stroke='%2394A3B8' stroke-width='0.5' opacity='0.15'/%3E%3C/svg%3E");
-    background-attachment: fixed;
-}
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 1.5rem; }
+        .metric-card { background: #fff; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .metric-icon { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0; }
+        .metric-info h4 { margin: 0 0 0.2rem 0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; }
+        .metric-info .val { margin: 0; font-size: 1.65rem; font-weight: 800; color: #0f172a; line-height: 1; }
 
-/* Sidebar */
-.sidebar { width: 280px; background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0f172a 100%); color: var(--sidebar-text); display: flex; flex-direction: column; position: fixed; height: 100vh; border-right: 1px solid var(--sidebar-border); z-index: 50; }
-.brand { padding: 2rem 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid var(--sidebar-border); }
-.brand-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-.brand-text { display: flex; flex-direction: column; }
-.brand-title { font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; line-height: 1.2; }
-.brand-subtitle { font-size: 0.65rem; font-weight: 600; color: var(--accent); letter-spacing: 1px; margin-top: 0.25rem; }
+        .card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.85rem; flex-wrap: wrap; gap: 0.75rem; }
+        .card-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+        .card-title i { color: var(--accent); }
 
-.nav-container { padding: 1.5rem 1rem; overflow-y: auto; flex: 1; }
-.nav-section { font-size: 0.7rem; font-weight: 700; color: #475569; letter-spacing: 1.5px; margin: 1.5rem 0 0.5rem 1rem; }
-.nav-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--sidebar-text); border-radius: 8px; margin-bottom: 0.25rem; font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease; position: relative; }
-.nav-item i { width: 20px; text-align: center; font-size: 1rem; transition: color 0.2s; }
-.nav-item:hover { background-color: var(--sidebar-hover); color: var(--sidebar-text-active); }
-.nav-item.active { background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%); color: var(--sidebar-text-active); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; }
-.nav-item.active i { color: var(--accent); }
+        .btn { padding: 0.55rem 1rem; border-radius: 6px; font-size: 0.84rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 0.45rem; transition: all 0.15s; text-decoration: none; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-purple { background: var(--purple); color: #fff; }
+        .btn-purple:hover:not(:disabled) { background: #6d28d9; }
+        .btn-secondary { background: #fff; color: var(--text-main); border-color: var(--border); }
+        .btn-secondary:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Main Content */
-.main-wrapper { flex: 1; margin-left: 280px; padding: 3rem 4rem; display: flex; flex-direction: column; gap: 2rem; max-width: 1400px; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; background: #f8fafc; padding: 0.9rem 1.15rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1.25rem; }
+        .toolbar-select { padding: 0.55rem 0.8rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.88rem; color: #0f172a; background: #fff; min-width: 220px; }
 
-/* Dashboard Hero */
-.hero { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-.hero-content h1 { margin: 0 0 0.5rem 0; font-size: 2.25rem; font-weight: 300; color: var(--text-main); letter-spacing: -0.5px; }
-.hero-highlight { font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero-content p { margin: 0; font-size: 1.1rem; color: var(--text-muted); max-width: 600px; line-height: 1.5; }
-.system-status { display: flex; align-items: center; gap: 0.5rem; background: #fff; padding: 0.5rem 1rem; border-radius: 999px; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-.status-dot { width: 8px; height: 8px; background-color: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); }
+        .graph-workspace { display: grid; grid-template-columns: 1.65fr 1fr; gap: 1.5rem; align-items: start; }
+        .canvas-box { background: #ffffff; border: 1px solid var(--border); border-radius: 10px; position: relative; overflow: hidden; min-height: 440px; display: flex; flex-direction: column; }
+        #interactiveGraphSvg { width: 100%; height: 440px; display: block; background: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 20px 20px; user-select: none; }
 
-/* Cards */
-.card { background: var(--card-bg); border-radius: 12px; padding: 2rem; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-.card-title { margin: 0; font-size: 1.1rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 0.75rem; }
-.card-title i { color: var(--accent); }
+        .inspector-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; min-height: 440px; display: flex; flex-direction: column; gap: 1rem; }
+        .inspector-section { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 0.95rem 1.1rem; }
+        .inspector-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.75px; color: var(--text-muted); margin-bottom: 0.35rem; }
+        .inspector-val { font-size: 0.95rem; font-weight: 700; color: #0f172a; word-break: break-word; }
 
-/* Metrics */
-.metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-.metric-card { background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 1.25rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-.metric-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-.metric-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-.mi-1 { background: #eff6ff; color: #3b82f6; }
-.mi-2 { background: #f5f3ff; color: #8b5cf6; }
-.mi-3 { background: #ecfeff; color: #06b6d4; }
-.mi-4 { background: #ecfdf5; color: #10b981; }
-.metric-info h4 { margin: 0 0 0.25rem 0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; }
-.metric-info .val { margin: 0 0 0.25rem 0; font-size: 1.75rem; font-weight: 700; color: var(--text-main); line-height: 1; }
-.metric-info p { margin: 0; font-size: 0.75rem; color: var(--text-muted); }
+        .adj-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.4rem; }
+        .adj-table th { background: #f8fafc; color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; padding: 0.55rem 0.65rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .adj-table td { padding: 0.55rem 0.65rem; border-bottom: 1px solid #f1f5f9; font-family: monospace; }
 
-/* Horizontal Pipeline */
-.horiz-pipeline { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; background: #f8fafc; padding: 1.5rem 2rem; border-radius: 8px; border: 1px solid #e2e8f0; }
-.hp-node { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; z-index: 2; width: 60px; }
-.hp-circle { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
-.hp-circle i { font-size: 0.6rem; color: transparent; }
-.hp-label { font-size: 0.65rem; font-weight: 700; color: #64748b; text-transform: uppercase; text-align: center; }
-.hp-line { flex: 1; height: 2px; background: #cbd5e1; margin: -20px 0 0 0; z-index: 1; transition: background 0.3s; }
-.hp-node.completed .hp-circle { background: var(--success); border-color: var(--success); }
-.hp-node.completed .hp-circle i { color: #fff; }
-.hp-node.completed .hp-label { color: var(--success); }
-.hp-line.completed { background: var(--success); }
+        /* Graph Legend */
+        .graph-legend { display: flex; flex-wrap: wrap; gap: 1rem; padding: 0.85rem 1.15rem; background: #f8fafc; border-top: 1px solid var(--border); font-size: 0.78rem; font-weight: 600; color: var(--text-main); }
+        .legend-entry { display: inline-flex; align-items: center; gap: 0.4rem; }
+        .legend-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 2px solid transparent; }
 
-/* Drag Drop Upload */
-.upload-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 3rem 2rem; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s; }
-.upload-zone:hover { border-color: var(--accent); background: #eff6ff; }
-.upload-zone i { font-size: 3rem; color: #94a3b8; margin-bottom: 1rem; transition: color 0.2s; }
-.upload-zone:hover i { color: var(--accent); }
-.upload-zone h3 { margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 700; letter-spacing: 1px; color: var(--text-main); }
-.upload-zone p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
-.browse-btn { display: inline-block; margin-top: 1rem; background: #fff; border: 1px solid var(--border); padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .chip { display: inline-flex; align-items: center; gap: 0.35rem; background: #fff; border: 1px solid var(--border); padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.82rem; font-family: monospace; font-weight: 600; margin: 0.15rem; }
+        .chip-bfs { background: #eff6ff; border-color: #93c5fd; color: #1e40af; }
+        .chip-dfs { background: #eef2ff; border-color: #a5b4fc; color: #3730a3; }
 
-/* Tables */
-.modern-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9rem; }
-.modern-table th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); }
-.modern-table th:first-child { border-left: 1px solid var(--border); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-.modern-table th:last-child { border-right: 1px solid var(--border); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
-.modern-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-.modern-table tr:hover td { background: #f8fafc; }
-.badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 0.25rem; }
-.badge-success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
-.badge-primary { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+        .comp-card { border: 1px solid var(--border); border-radius: 8px; padding: 1.1rem; background: #fff; transition: all 0.15s; }
+        .comp-card.active-comp { border-color: var(--purple); box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15); background: #faf5ff; }
 
-/* Buttons */
-.btn-primary { background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
-.btn-primary:hover { background: #1d4ed8; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.3); }
-.btn-danger { background: #fff; color: var(--error); border: 1px solid #fecaca; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-.btn-danger:hover { background: #fef2f2; border-color: var(--error); }
-
-/* DSA Grid */
-.dsa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
-.dsa-chip { background: #f8fafc; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-main); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: transform 0.2s; }
-.dsa-chip:hover { transform: translateY(-2px); border-color: var(--accent); color: var(--accent); }
-.dsa-chip i { font-size: 1.25rem; color: var(--text-muted); }
-.dsa-chip:hover i { color: var(--accent); }
-
-    
-        /* Final Polish Global CSS */
-        .table-responsive { width: 100%; overflow-x: auto; }
-        .modern-table td { word-break: break-all; max-width: 300px; }
-        @media (max-width: 768px) {
+        @media (max-width: 980px) {
             body { flex-direction: column; overflow-y: auto; }
-            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .sidebar { width: 100%; height: auto; }
             .main-wrapper { padding: 1rem; overflow-y: visible; }
-            .lab-container { grid-template-columns: 1fr !important; }
-            .res-grid { grid-template-columns: 1fr !important; }
-            .hero h1 { font-size: 1.75rem; }
-            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+            .metrics-grid { grid-template-columns: 1fr 1fr; }
+            .graph-workspace { grid-template-columns: 1fr; }
         }
     </style>
-
 </head>
 <body>
     <div class="sidebar">
@@ -154,174 +109,669 @@ body {
         </div>
         <div class="nav-container">
             <div class="nav-section">OVERVIEW</div>
-            <a href="/" class="nav-item "><i class="fa-solid fa-gauge"></i> Dashboard & Upload</a>
-            
+            <a href="/" class="nav-item"><i class="fa-solid fa-gauge"></i> Dashboard & Upload</a>
+
             <div class="nav-section">PROCESSING</div>
-            <a href="/pipeline" class="nav-item "><i class="fa-solid fa-bars-progress"></i> Processing Pipeline</a>
-            <a href="/analysis" class="nav-item "><i class="fa-solid fa-microscope"></i> DSA Analysis</a>
-            
+            <a href="/pipeline" class="nav-item"><i class="fa-solid fa-bars-progress"></i> Processing Pipeline</a>
+            <a href="/analysis" class="nav-item"><i class="fa-solid fa-microscope"></i> DSA Analysis</a>
+            <a href="/walkthrough" class="nav-item"><i class="fa-solid fa-shoe-prints"></i> Algorithm Walkthrough</a>
+
             <div class="nav-section">ALGORITHMS</div>
-            <a href="/string-algorithms" class="nav-item "><i class="fa-solid fa-code"></i> String Algorithms</a>
-            <a href="/similarity" class="nav-item "><i class="fa-solid fa-not-equal"></i> Similarity Matrix</a>
+            <a href="/string-algorithms" class="nav-item"><i class="fa-solid fa-code"></i> String Algorithms</a>
+            <a href="/similarity" class="nav-item"><i class="fa-solid fa-not-equal"></i> Similarity Matrix</a>
             <a href="/graph" class="nav-item active"><i class="fa-solid fa-network-wired"></i> Graph Visualization</a>
-            
+
             <div class="nav-section">RESULTS</div>
-            <a href="/results" class="nav-item "><i class="fa-solid fa-layer-group"></i> Results & Categories</a>
-            <a href="/export" class="nav-item "><i class="fa-solid fa-file-export"></i> Export JSON</a>
+            <a href="/results" class="nav-item"><i class="fa-solid fa-layer-group"></i> Results & Categories</a>
+            <a href="/export" class="nav-item"><i class="fa-solid fa-file-export"></i> Export JSON</a>
         </div>
     </div>
-    
+
     <div class="main-wrapper">
-        
+        <div class="hero">
+            <h1>Interactive <span class="hero-highlight">Document Graph</span></h1>
+            <p>Undirected adjacency list topology built from Jaccard similarity weights (&ge; Threshold T).</p>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true, theme:'base', themeVariables: { primaryColor: '#eff6ff', primaryBorderColor: '#2563eb', primaryTextColor: '#0f172a', lineColor: '#94a3b8', fontFamily: 'Inter' }});</script>
-<style>
-.chip { display: inline-flex; align-items: center; gap: 0.4rem; background: #fff; border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-family: monospace; margin: 0.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-.chip-opt { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+        <!-- EMPTY STATE WHEN GRAPH NOT BUILT -->
+        <div th:if="${!graphReady}" class="card" style="text-align: center; padding: 3.5rem 2rem; color: var(--text-muted); border: 1px dashed var(--border); background: #f8fafc;">
+            <i class="fa-solid fa-network-wired" style="font-size: 2.75rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+            <h3 style="margin: 0 0 0.5rem 0; color: #0f172a;" th:text="${!hasDocs ? 'NO DOCUMENTS UPLOADED' : 'GRAPH NOT BUILT YET'}">GRAPH NOT BUILT YET</h3>
+            <p style="margin: 0 0 1.25rem 0; font-size: 0.92rem;"
+               th:text="${!hasDocs ? 'Upload documents on the Dashboard and run Full Analysis to construct the document similarity graph.' : 'Documents are uploaded. Click Run Full Analysis below to build the document graph.'}">
+            </p>
+            <div style="display: flex; justify-content: center; gap: 0.75rem;">
+                <a th:if="${!hasDocs}" href="/" class="btn btn-primary"><i class="fa-solid fa-upload"></i> Go to Dashboard</a>
+                <form th:if="${hasDocs}" action="/run-analysis" method="post" style="margin: 0;">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Run Full Analysis</button>
+                </form>
+            </div>
+        </div>
 
-        /* Final Polish Global CSS */
-        .table-responsive { width: 100%; overflow-x: auto; }
-        .modern-table td { word-break: break-all; max-width: 300px; }
-        @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; }
-            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
-            .main-wrapper { padding: 1rem; overflow-y: visible; }
-            .lab-container { grid-template-columns: 1fr !important; }
-            .res-grid { grid-template-columns: 1fr !important; }
-            .hero h1 { font-size: 1.75rem; }
-            div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+        <!-- POPULATED INTERACTIVE GRAPH VIEW -->
+        <div th:if="${graphReady}">
+            <!-- Top Metrics Bar -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon" style="background:#eff6ff; color:#2563eb;"><i class="fa-solid fa-circle-nodes"></i></div>
+                    <div class="metric-info">
+                        <h4>Vertices (V)</h4>
+                        <p class="val" id="metricVertexCount" th:text="${vertexCount}">0</p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="background:#f5f3ff; color:#7c3aed;"><i class="fa-solid fa-link"></i></div>
+                    <div class="metric-info">
+                        <h4>Unique Undirected Edges (E)</h4>
+                        <p class="val" id="metricEdgeCount" th:text="${edgeCount}">0</p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="background:#ecfdf5; color:#10b981;"><i class="fa-solid fa-object-group"></i></div>
+                    <div class="metric-info">
+                        <h4>Connected Components</h4>
+                        <p class="val" id="metricComponentCount" th:text="${componentCount}">0</p>
+                    </div>
+                </div>
+                <div class="metric-card" style="background: var(--sidebar-bg); border-color: var(--sidebar-bg);">
+                    <form action="/graph/threshold" method="post" style="width: 100%;">
+                        <label style="display:block; font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:0.4rem;">Similarity Threshold (T)</label>
+                        <div style="display:flex; gap:0.5rem;">
+                            <input type="number" name="threshold" step="0.01" min="0" max="1" th:value="${threshold}"
+                                   style="width:100%; padding:0.45rem 0.6rem; border-radius:6px; border:1px solid #334155; background:#1e293b; color:#fff; font-family:monospace; font-size:0.95rem;">
+                            <button type="submit" class="btn btn-primary" title="Update Threshold & Rebuild Graph"><i class="fa-solid fa-arrows-rotate"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Interactive Topology + Inspector Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fa-solid fa-draw-polygon"></i> Interactive Undirected Document Graph</h3>
+                    <span style="font-size: 0.82rem; color: var(--text-muted);">
+                        <i class="fa-solid fa-hand-pointer"></i> Click any vertex or use the dropdown below to inspect neighbors, incident weights, and components
+                    </span>
+                </div>
+
+                <!-- Interactive Controls Toolbar -->
+                <div class="toolbar">
+                    <label for="graphDocSelect" style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Select Document:</label>
+                    <select id="graphDocSelect" class="toolbar-select" onchange="selectVertexById(this.value)">
+                        <option value="">-- Select a Document Vertex --</option>
+                        <option th:each="v : ${graphVertices}"
+                                th:value="${v.id}"
+                                th:text="${v.filename + ' (' + v.componentId + ')'}"
+                                th:selected="${v.id == selectedDocId}"></option>
+                    </select>
+
+                    <button type="button" id="highlightCompBtn" class="btn btn-purple" onclick="toggleSelectedComponentHighlight()" disabled>
+                        <i class="fa-solid fa-object-group"></i> <span id="highlightCompBtnText">Highlight Connected Component</span>
+                    </button>
+
+                    <button type="button" id="resetGraphBtn" class="btn btn-secondary" onclick="resetGraphSelection()">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Selection &amp; Highlights
+                    </button>
+                </div>
+
+                <!-- Graph SVG + Selected Vertex Inspector -->
+                <div class="graph-workspace">
+                    <div class="canvas-box">
+                        <svg id="interactiveGraphSvg" viewBox="0 0 760 440" role="img" aria-label="Interactive Document Similarity Graph"></svg>
+                        <div class="graph-legend">
+                            <span class="legend-entry"><span class="legend-dot" style="background:#2563eb; border-color:#1e3a8a;"></span> Selected Document</span>
+                            <span class="legend-entry"><span class="legend-dot" style="background:#10b981; border-color:#065f46;"></span> Direct Neighbor</span>
+                            <span class="legend-entry"><span class="legend-dot" style="background:#7c3aed; border-color:#4c1d95;"></span> Highlighted Component</span>
+                            <span class="legend-entry"><span class="legend-dot" style="background:#f59e0b; border-color:#92400e;"></span> BFS/DFS Traversal (#Order)</span>
+                            <span class="legend-entry"><span class="legend-dot" style="background:#ffffff; border-color:#475569;"></span> Connected Vertex</span>
+                            <span class="legend-entry"><span class="legend-dot" style="background:#f8fafc; border:2px dashed #94a3b8;"></span> Isolated Vertex (Degree 0)</span>
+                        </div>
+                    </div>
+
+                    <!-- Selected Document Details & Adjacency Inspector -->
+                    <div class="inspector-box" id="vertexInspectorPanel">
+                        <div id="inspectorEmptyState" style="text-align: center; margin: auto; color: var(--text-muted); padding: 1.5rem;">
+                            <i class="fa-solid fa-circle-nodes" style="font-size: 2.2rem; color: #cbd5e1; margin-bottom: 0.75rem;"></i>
+                            <h4 style="margin: 0 0 0.35rem 0; color: #0f172a;">No Vertex Selected</h4>
+                            <p style="margin: 0; font-size: 0.85rem;">Select a document from the dropdown or click a vertex in the graph to view its adjacency list, incident edge weights, and connected component.</p>
+                        </div>
+
+                        <div id="inspectorActiveContent" style="display: none; flex-direction: column; gap: 0.9rem;">
+                            <div class="inspector-section">
+                                <div class="inspector-label">Selected Document Vertex</div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+                                    <div class="inspector-val" id="inspDocName">-</div>
+                                    <a id="inspDocDetailsLink" href="/document" style="font-size: 0.78rem; color: var(--accent); font-weight: 600; text-decoration: none;">
+                                        View Details <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="inspector-section">
+                                <div class="inspector-label">Connected-Component Identifier</div>
+                                <div class="inspector-val" style="color: var(--purple);" id="inspCompId">-</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                    Dynamic Category: <strong id="inspCompCategory" style="color: #0f172a;">-</strong>
+                                </div>
+                                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem;">
+                                    Component Members: <span id="inspCompMembers" style="font-family: monospace; color: #0f172a;">-</span>
+                                </div>
+                            </div>
+
+                            <div class="inspector-section">
+                                <div class="inspector-label">Actual Adjacency List &amp; Incident Edge Weights</div>
+                                <div id="inspIsolatedNotice" style="display: none; padding: 0.65rem; background: #f8fafc; border: 1px dashed var(--border); border-radius: 6px; font-size: 0.82rem; color: var(--text-muted);">
+                                    Isolated vertex (0 neighbors meet similarity threshold T = <span th:text="${threshold}">0.1</span>).
+                                </div>
+                                <table class="adj-table" id="inspNeighborsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Adjacent Neighbor</th>
+                                            <th>Incident Jaccard Weight</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inspNeighborsBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BFS and DFS Backend Traversal Controls -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <!-- BFS Traversal -->
+                <div class="card" style="margin-bottom: 0;">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-water"></i> Breadth-First Search (BFS)</h3>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;">O(V + E) Queue</span>
+                    </div>
+                    <form action="/graph/traverse" method="post" style="margin-bottom: 1rem; display: flex; gap: 0.75rem;">
+                        <input type="hidden" name="algorithm" value="BFS">
+                        <select name="docId" required class="toolbar-select" style="flex: 1;">
+                            <option value="" disabled th:selected="${traversalStartId == null}">Select Starting Document...</option>
+                            <option th:each="doc : ${documents}"
+                                    th:value="${doc.id}"
+                                    th:text="${doc.originalFilename}"
+                                    th:selected="${traversalAlgo == 'BFS' and traversalStartId == doc.id}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-play"></i> Run BFS</button>
+                    </form>
+                    <div th:if="${traversalAlgo == 'BFS' and traversalResult != null}" style="background: #f8fafc; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                            <span style="font-size: 0.76rem; text-transform: uppercase; color: #1e40af; font-weight: 700;">
+                                Backend BFS Order (Start: <span th:text="${traversalStart}"></span>)
+                            </span>
+                            <a th:href="@{/walkthrough(algorithm='bfs', docId=${traversalStartId})}" style="font-size: 0.76rem; color: var(--accent); font-weight: 600; text-decoration: none;">
+                                Step-by-Step Walkthrough &rarr;
+                            </a>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
+                            <th:block th:each="node, iterStat : ${traversalResult}">
+                                <span class="chip chip-bfs">
+                                    <strong th:text="${'#' + iterStat.count}">#1</strong>
+                                    <span th:text="${node.originalFilename}"></span>
+                                </span>
+                                <i th:if="${!iterStat.last}" class="fa-solid fa-arrow-right" style="color: #94a3b8; font-size: 0.75rem;"></i>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DFS Traversal -->
+                <div class="card" style="margin-bottom: 0;">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-arrow-down-up-across-line"></i> Depth-First Search (DFS)</h3>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;">O(V + E) Recursion</span>
+                    </div>
+                    <form action="/graph/traverse" method="post" style="margin-bottom: 1rem; display: flex; gap: 0.75rem;">
+                        <input type="hidden" name="algorithm" value="DFS">
+                        <select name="docId" required class="toolbar-select" style="flex: 1;">
+                            <option value="" disabled th:selected="${traversalStartId == null}">Select Starting Document...</option>
+                            <option th:each="doc : ${documents}"
+                                    th:value="${doc.id}"
+                                    th:text="${doc.originalFilename}"
+                                    th:selected="${traversalAlgo == 'DFS' and traversalStartId == doc.id}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" style="background: #4f46e5;"><i class="fa-solid fa-play"></i> Run DFS</button>
+                    </form>
+                    <div th:if="${traversalAlgo == 'DFS' and traversalResult != null}" style="background: #f8fafc; border: 1px solid #c7d2fe; border-radius: 8px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                            <span style="font-size: 0.76rem; text-transform: uppercase; color: #3730a3; font-weight: 700;">
+                                Backend DFS Order (Start: <span th:text="${traversalStart}"></span>)
+                            </span>
+                            <a th:href="@{/walkthrough(algorithm='dfs', docId=${traversalStartId})}" style="font-size: 0.76rem; color: #4f46e5; font-weight: 600; text-decoration: none;">
+                                Step-by-Step Walkthrough &rarr;
+                            </a>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
+                            <th:block th:each="node, iterStat : ${traversalResult}">
+                                <span class="chip chip-dfs">
+                                    <strong th:text="${'#' + iterStat.count}">#1</strong>
+                                    <span th:text="${node.originalFilename}"></span>
+                                </span>
+                                <i th:if="${!iterStat.last}" class="fa-solid fa-arrow-right" style="color: #94a3b8; font-size: 0.75rem;"></i>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connected Components Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fa-solid fa-object-group"></i> Connected Components (<span th:text="${componentCount}">0</span>)</h3>
+                    <a href="/walkthrough?algorithm=components" style="font-size: 0.82rem; color: var(--accent); font-weight: 600; text-decoration: none;">
+                        <i class="fa-solid fa-shoe-prints"></i> Trace Connected Components in Walkthrough
+                    </a>
+                </div>
+                <div class="comp-grid">
+                    <div th:each="comp : ${graphComponents}"
+                         class="comp-card"
+                         th:id="${'compCard-' + comp.componentNumber}">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h4 style="margin: 0; font-size: 0.92rem; color: #0f172a;">
+                                <i class="fa-solid fa-layer-group" style="color: var(--purple); margin-right: 0.35rem;"></i>
+                                <span th:text="${comp.componentId}">Component #1</span>
+                            </h4>
+                            <button type="button" class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;"
+                                    th:onclick="'highlightComponentByNumber(' + ${comp.componentNumber} + ')'">
+                                <i class="fa-solid fa-highlighter"></i> Highlight
+                            </button>
+                        </div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                            Category: <strong style="color: var(--accent);" th:text="${comp.categoryLabel}"></strong>
+                            <span th:if="${comp.isolated}" style="margin-left: 0.35rem; color: #64748b;">(Isolated Singleton)</span>
+                        </div>
+                        <ul style="margin: 0; padding-left: 1.25rem; color: var(--text-main); font-size: 0.84rem;">
+                            <li th:each="docName : ${comp.documentNames}" th:text="${docName}"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const graphVertices = /*[[${graphVertices}]]*/ [];
+        const graphEdges = /*[[${graphEdges}]]*/ [];
+        const graphComponents = /*[[${graphComponents}]]*/ [];
+        const initialSelectedId = /*[[${selectedDocId}]]*/ '';
+        const backendTraversalIds = /*[[${traversalIds}]]*/ [];
+        const backendTraversalAlgo = /*[[${traversalAlgo}]]*/ '';
+
+        let currentSelectedId = initialSelectedId || '';
+        let highlightedComponentNumber = null;
+        let activeTraversalIds = Array.isArray(backendTraversalIds) ? backendTraversalIds.slice() : [];
+
+        // Map vertices by ID for O(1) lookup of backend data
+        const vertexById = {};
+        graphVertices.forEach(v => { vertexById[v.id] = v; });
+
+        // Compute clean deterministic node coordinates grouped by connected component
+        const nodePositions = {};
+        function computeInitialPositions() {
+            const width = 760, height = 440;
+            const total = graphVertices.length;
+            if (total === 0) return;
+            if (total === 1) {
+                nodePositions[graphVertices[0].id] = { x: width / 2, y: height / 2 };
+                return;
+            }
+            const cx = width / 2, cy = height / 2;
+            const rx = Math.min(270, Math.max(140, total * 32));
+            const ry = Math.min(155, Math.max(110, total * 22));
+
+            // Order vertices by componentNumber so vertices in the same component sit adjacent
+            const sorted = graphVertices.slice().sort((a, b) => a.componentNumber - b.componentNumber);
+            sorted.forEach((v, idx) => {
+                const angle = (2 * Math.PI * idx) / total - Math.PI / 2;
+                nodePositions[v.id] = {
+                    x: Math.round(cx + rx * Math.cos(angle)),
+                    y: Math.round(cy + ry * Math.sin(angle))
+                };
+            });
         }
-    </style>
 
-<div class="hero">
-    <div class="hero-content">
-        <h1>Graph <span class="hero-highlight">Analytics Dashboard</span></h1>
-        <p>Adjacency list topology based on Jaccard similarity thresholds.</p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #cbd5e1; background: rgba(0,0,0,0.2); display: inline-block; padding: 0.5rem 1rem; border-radius: 6px;"><i class="fa-solid fa-circle-info" style="color: #38bdf8;"></i> Each document is represented as a vertex. An edge represents sufficient similarity between two documents.</p>
-    </div>
-</div>
+        function renderInteractiveGraph() {
+            const svg = document.getElementById('interactiveGraphSvg');
+            if (!svg) return;
+            svg.innerHTML = '';
 
-<div th:if="${graph == null}" style="text-align: center; padding: 4rem; color: var(--text-muted); border: 1px dashed var(--border); border-radius: 12px; background: #f8fafc; margin-bottom: 2rem;">
-    <i class="fa-solid fa-network-wired" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
-    <h4>GRAPH NOT BUILT YET</h4>
-    <p>Please click "Run Full Analysis" on the dashboard to build the document graph.</p>
-</div>
+            const selectedVertex = currentSelectedId ? vertexById[currentSelectedId] : null;
+            const directNeighborIds = new Set();
+            if (selectedVertex && Array.isArray(selectedVertex.neighbors)) {
+                selectedVertex.neighbors.forEach(nb => directNeighborIds.add(nb.id));
+            }
 
-<div th:if="${graph != null}">
-    <div class="metrics-grid" style="margin-bottom: 2rem;">
-        <div class="metric-card">
-            <div class="metric-icon" style="background:#eff6ff; color:#3b82f6;"><i class="fa-solid fa-circle-nodes"></i></div>
-            <div class="metric-info"><h4>Vertices (V)</h4><p class="val" th:text="${graph.adjacencyList.size()}">0</p></div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-icon" style="background:#f5f3ff; color:#8b5cf6;"><i class="fa-solid fa-link"></i></div>
-            <div class="metric-info"><h4>Edges (E)</h4><p class="val" th:text="${graph.edgeCount / 2}">0</p></div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-icon" style="background:#ecfdf5; color:#10b981;"><i class="fa-solid fa-object-group"></i></div>
-            <div class="metric-info"><h4>Connected Components</h4><p class="val" th:text="${graph.findConnectedComponents().size()}">0</p></div>
-        </div>
-        <div class="metric-card" style="background: var(--sidebar-bg); border-color: var(--sidebar-bg);">
-            <form action="/graph/threshold" method="post" style="width: 100%;">
-                <label style="display:block; font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:0.5rem;">Current Threshold (T)</label>
-                <div style="display:flex; gap:0.5rem;">
-                    <input type="number" name="threshold" step="0.01" min="0" max="1" th:value="${threshold}" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid #334155; background:#1e293b; color:#fff; font-family:monospace; font-size:1rem;">
-                    <button type="submit" class="btn-primary" style="padding: 0.5rem;"><i class="fa-solid fa-arrows-rotate"></i></button>
-                </div>
-            </form>
-        </div>
-    </div>
+            const componentMemberIds = new Set();
+            if (highlightedComponentNumber !== null) {
+                const compObj = graphComponents.find(c => c.componentNumber === highlightedComponentNumber);
+                if (compObj && Array.isArray(compObj.documentIds)) {
+                    compObj.documentIds.forEach(id => componentMemberIds.add(id));
+                }
+            }
 
-    <div class="card" style="margin-bottom: 2rem;">
-        <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-draw-polygon"></i> Topology Visualization</h3></div>
-        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 2rem; min-height: 400px;">
-            <div class="mermaid" th:if="${graph.adjacencyList.size() > 0 and graph.edgeCount > 0}">
-            graph TD
-            <th:block th:each="entry : ${graph.adjacencyList}">
-                <th:block th:if="${entry.value.isEmpty()}">
-                    [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]]
-                </th:block>
-                <th:block th:each="neighbor : ${entry.value}">
-                    <th:block th:if="${entry.key.id.compareTo(neighbor.id) < 0}">
-                        [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]] ---|[[${#numbers.formatDecimal(@similarityService.calculateJaccardSimilarity(entry.key, neighbor), 1, 2)}]]| [[${#strings.replace(neighbor.originalFilename, '.txt', '')}]]
-                    </th:block>
-                </th:block>
-            </th:block>
-            </div>
-            <div class="mermaid" th:if="${graph.adjacencyList.size() > 0 and graph.edgeCount == 0}">
-            graph TD
-            <th:block th:each="entry : ${graph.adjacencyList}">
-                [[${#strings.replace(entry.key.originalFilename, '.txt', '')}]]
-            </th:block>
-            </div>
-            <div th:if="${graph.adjacencyList.size() == 0}" style="text-align: center; color: var(--text-muted);">
-                <i class="fa-solid fa-project-diagram" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
-                <h4>NO GRAPH DATA</h4><p>Upload documents to generate nodes.</p>
-            </div>
-        </div>
-    </div>
+            const traversalIndexMap = {};
+            activeTraversalIds.forEach((id, idx) => {
+                traversalIndexMap[id] = idx + 1;
+            });
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-        <!-- BFS Traversal -->
-        <div class="card">
-            <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-water"></i> Breadth-First Search (BFS)</h3></div>
-            <form action="/graph/traverse" method="post" style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
-                <input type="hidden" name="algorithm" value="BFS">
-                <select name="docId" required style="flex: 1; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
-                    <option value="" disabled selected>Starting Document...</option>
-                    <option th:each="doc : ${documents}" th:value="${doc.id}" th:text="${doc.originalFilename}"></option>
-                </select>
-                <button type="submit" class="btn-primary"><i class="fa-solid fa-play"></i> Run BFS</button>
-            </form>
-            <div th:if="${traversalAlgo == 'BFS'}" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
-                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">Traversal Order (Start: [[${traversalStart}]])</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                    <th:block th:each="node, iterStat : ${traversalResult}">
-                        <span class="chip chip-opt" th:text="${node.originalFilename}"></span>
-                        <i th:if="${!iterStat.last}" class="fa-solid fa-arrow-right" style="color: #cbd5e1; font-size: 0.8rem;"></i>
-                    </th:block>
-                </div>
-            </div>
-        </div>
+            // 1. Render Undirected Edges (each unique unordered pair rendered once)
+            graphEdges.forEach(edge => {
+                const p1 = nodePositions[edge.sourceId];
+                const p2 = nodePositions[edge.targetId];
+                if (!p1 || !p2) return;
 
-        <!-- DFS Traversal -->
-        <div class="card">
-            <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-arrow-down-up-across-line"></i> Depth-First Search (DFS)</h3></div>
-            <form action="/graph/traverse" method="post" style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
-                <input type="hidden" name="algorithm" value="DFS">
-                <select name="docId" required style="flex: 1; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
-                    <option value="" disabled selected>Starting Document...</option>
-                    <option th:each="doc : ${documents}" th:value="${doc.id}" th:text="${doc.originalFilename}"></option>
-                </select>
-                <button type="submit" class="btn-primary" style="background: #4f46e5;"><i class="fa-solid fa-play"></i> Run DFS</button>
-            </form>
-            <div th:if="${traversalAlgo == 'DFS'}" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
-                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">Traversal Order (Start: [[${traversalStart}]])</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                    <th:block th:each="node, iterStat : ${traversalResult}">
-                        <span class="chip" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe;" th:text="${node.originalFilename}"></span>
-                        <i th:if="${!iterStat.last}" class="fa-solid fa-arrow-right" style="color: #cbd5e1; font-size: 0.8rem;"></i>
-                    </th:block>
-                </div>
-            </div>
-        </div>
-    </div>
+                const isIncidentToSelected = selectedVertex &&
+                    (edge.sourceId === selectedVertex.id || edge.targetId === selectedVertex.id);
+                const isInHighlightedComp = highlightedComponentNumber !== null &&
+                    edge.componentNumber === highlightedComponentNumber;
+                const isInTraversal = traversalIndexMap[edge.sourceId] && traversalIndexMap[edge.targetId];
 
-    <!-- Connected Components -->
-    <div class="card">
-        <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-object-group"></i> Connected Components</h3></div>
-        <div th:if="${graph.findConnectedComponents().size() == 0}" style="color: var(--text-muted);">No components generated.</div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
-            <div th:each="comp, iterStat : ${graph.findConnectedComponents()}" style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem; background: #fff;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: var(--text-main);"><i class="fa-solid fa-layer-group" style="color: var(--accent); margin-right: 0.5rem;"></i> Component [[${iterStat.index + 1}]]</h4>
-                <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-muted); font-size: 0.85rem;">
-                    <li th:each="doc : ${comp}" th:text="${doc.originalFilename}"></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
+                let strokeColor = '#cbd5e1';
+                let strokeWidth = 2;
+                let badgeBg = '#f8fafc';
+                let badgeBorder = '#cbd5e1';
+                let badgeText = '#334155';
+
+                if (isIncidentToSelected) {
+                    strokeColor = '#2563eb';
+                    strokeWidth = 3.5;
+                    badgeBg = '#eff6ff';
+                    badgeBorder = '#2563eb';
+                    badgeText = '#1e3a8a';
+                } else if (isInHighlightedComp) {
+                    strokeColor = '#7c3aed';
+                    strokeWidth = 3;
+                    badgeBg = '#f5f3ff';
+                    badgeBorder = '#7c3aed';
+                    badgeText = '#4c1d95';
+                } else if (isInTraversal) {
+                    strokeColor = '#f59e0b';
+                    strokeWidth = 2.8;
+                    badgeBg = '#fffbeb';
+                    badgeBorder = '#f59e0b';
+                    badgeText = '#92400e';
+                }
+
+                const gEdge = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', p1.x);
+                line.setAttribute('y1', p1.y);
+                line.setAttribute('x2', p2.x);
+                line.setAttribute('y2', p2.y);
+                line.setAttribute('stroke', strokeColor);
+                line.setAttribute('stroke-width', strokeWidth);
+                gEdge.appendChild(line);
+
+                // Edge weight pill at midpoint
+                const mx = (p1.x + p2.x) / 2;
+                const my = (p1.y + p2.y) / 2;
+
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', mx - 20);
+                rect.setAttribute('y', my - 10);
+                rect.setAttribute('width', 40);
+                rect.setAttribute('height', 20);
+                rect.setAttribute('rx', 6);
+                rect.setAttribute('fill', badgeBg);
+                rect.setAttribute('stroke', badgeBorder);
+                rect.setAttribute('stroke-width', '1.2');
+                gEdge.appendChild(rect);
+
+                const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                txt.setAttribute('x', mx);
+                txt.setAttribute('y', my + 4);
+                txt.setAttribute('text-anchor', 'middle');
+                txt.setAttribute('fill', badgeText);
+                txt.setAttribute('font-size', '11');
+                txt.setAttribute('font-family', 'monospace');
+                txt.setAttribute('font-weight', '700');
+                txt.textContent = edge.formattedWeight;
+                gEdge.appendChild(txt);
+
+                svg.appendChild(gEdge);
+            });
+
+            // 2. Render Document Vertices
+            graphVertices.forEach(v => {
+                const pos = nodePositions[v.id];
+                if (!pos) return;
+
+                const isSelected = (v.id === currentSelectedId);
+                const isNeighbor = directNeighborIds.has(v.id);
+                const isInComp = componentMemberIds.has(v.id);
+                const travOrder = traversalIndexMap[v.id];
+
+                let fillColor = v.isolated ? '#f8fafc' : '#ffffff';
+                let strokeColor = v.isolated ? '#94a3b8' : '#475569';
+                let textColor = '#0f172a';
+                let strokeWidth = 2.5;
+                let dashArray = v.isolated ? '4,3' : '';
+
+                if (isSelected) {
+                    fillColor = '#2563eb';
+                    strokeColor = '#1e3a8a';
+                    textColor = '#ffffff';
+                    strokeWidth = 3.5;
+                    dashArray = '';
+                } else if (isNeighbor) {
+                    fillColor = '#10b981';
+                    strokeColor = '#065f46';
+                    textColor = '#ffffff';
+                    strokeWidth = 3;
+                    dashArray = '';
+                } else if (isInComp) {
+                    fillColor = '#7c3aed';
+                    strokeColor = '#4c1d95';
+                    textColor = '#ffffff';
+                    strokeWidth = 3;
+                    dashArray = '';
+                } else if (travOrder) {
+                    fillColor = '#fef3c7';
+                    strokeColor = '#d97706';
+                    textColor = '#78350f';
+                    strokeWidth = 3;
+                    dashArray = '';
+                }
+
+                const gNode = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                gNode.style.cursor = 'pointer';
+                gNode.setAttribute('data-vertex-id', v.id);
+                gNode.addEventListener('click', () => selectVertexById(v.id));
+
+                if (isSelected) {
+                    const halo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    halo.setAttribute('cx', pos.x);
+                    halo.setAttribute('cy', pos.y);
+                    halo.setAttribute('r', 31);
+                    halo.setAttribute('fill', 'none');
+                    halo.setAttribute('stroke', 'rgba(37, 99, 235, 0.3)');
+                    halo.setAttribute('stroke-width', '5');
+                    gNode.appendChild(halo);
+                }
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', pos.x);
+                circle.setAttribute('cy', pos.y);
+                circle.setAttribute('r', 24);
+                circle.setAttribute('fill', fillColor);
+                circle.setAttribute('stroke', strokeColor);
+                circle.setAttribute('stroke-width', strokeWidth);
+                if (dashArray) circle.setAttribute('stroke-dasharray', dashArray);
+                gNode.appendChild(circle);
+
+                // Short code inside circle (C1, C2...)
+                const innerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                innerLabel.setAttribute('x', pos.x);
+                innerLabel.setAttribute('y', pos.y + 4);
+                innerLabel.setAttribute('text-anchor', 'middle');
+                innerLabel.setAttribute('fill', textColor);
+                innerLabel.setAttribute('font-size', '11');
+                innerLabel.setAttribute('font-weight', '700');
+                innerLabel.textContent = 'C' + v.componentNumber;
+                gNode.appendChild(innerLabel);
+
+                // Filename label below circle
+                const nameLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                nameLabel.setAttribute('x', pos.x);
+                nameLabel.setAttribute('y', pos.y + 40);
+                nameLabel.setAttribute('text-anchor', 'middle');
+                nameLabel.setAttribute('fill', isSelected ? '#1d4ed8' : '#0f172a');
+                nameLabel.setAttribute('font-size', '12');
+                nameLabel.setAttribute('font-weight', isSelected ? '800' : '600');
+                nameLabel.textContent = v.filename;
+                gNode.appendChild(nameLabel);
+
+                // Traversal order badge (#1, #2, ...) if part of active BFS/DFS result
+                if (travOrder) {
+                    const badgeCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    badgeCircle.setAttribute('cx', pos.x + 19);
+                    badgeCircle.setAttribute('cy', pos.y - 19);
+                    badgeCircle.setAttribute('r', 11);
+                    badgeCircle.setAttribute('fill', '#f59e0b');
+                    badgeCircle.setAttribute('stroke', '#ffffff');
+                    badgeCircle.setAttribute('stroke-width', '2');
+                    gNode.appendChild(badgeCircle);
+
+                    const badgeTxt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    badgeTxt.setAttribute('x', pos.x + 19);
+                    badgeTxt.setAttribute('y', pos.y - 15);
+                    badgeTxt.setAttribute('text-anchor', 'middle');
+                    badgeTxt.setAttribute('fill', '#ffffff');
+                    badgeTxt.setAttribute('font-size', '10');
+                    badgeTxt.setAttribute('font-weight', '800');
+                    badgeTxt.textContent = '#' + travOrder;
+                    gNode.appendChild(badgeTxt);
+                }
+
+                svg.appendChild(gNode);
+            });
+        }
+
+        function updateInspectorPanel() {
+            const emptyEl = document.getElementById('inspectorEmptyState');
+            const activeEl = document.getElementById('inspectorActiveContent');
+            const compBtn = document.getElementById('highlightCompBtn');
+            const compBtnText = document.getElementById('highlightCompBtnText');
+            const selectEl = document.getElementById('graphDocSelect');
+
+            if (selectEl && selectEl.value !== currentSelectedId) {
+                selectEl.value = currentSelectedId;
+            }
+
+            // Update component card highlights
+            document.querySelectorAll('.comp-card').forEach(el => el.classList.remove('active-comp'));
+            if (highlightedComponentNumber !== null) {
+                const activeCard = document.getElementById('compCard-' + highlightedComponentNumber);
+                if (activeCard) activeCard.classList.add('active-comp');
+            }
+
+            const v = currentSelectedId ? vertexById[currentSelectedId] : null;
+            if (!v) {
+                if (emptyEl) emptyEl.style.display = 'block';
+                if (activeEl) activeEl.style.display = 'none';
+                if (compBtn) compBtn.disabled = true;
+                if (compBtnText) compBtnText.textContent = 'Highlight Connected Component';
+                return;
+            }
+
+            if (emptyEl) emptyEl.style.display = 'none';
+            if (activeEl) activeEl.style.display = 'flex';
+            if (compBtn) {
+                compBtn.disabled = false;
+                const isCompHighlighted = (highlightedComponentNumber === v.componentNumber);
+                compBtnText.textContent = isCompHighlighted
+                    ? 'Clear Component Highlight (' + v.componentId + ')'
+                    : 'Highlight ' + v.componentId;
+            }
+
+            document.getElementById('inspDocName').textContent = v.filename;
+            document.getElementById('inspDocDetailsLink').setAttribute('href', '/document/' + v.id);
+            document.getElementById('inspCompId').textContent = v.componentId + ' (' + v.componentMemberNames.length + ' document(s))';
+            document.getElementById('inspCompCategory').textContent = v.categoryLabel;
+            document.getElementById('inspCompMembers').textContent = v.componentMemberNames.join(', ');
+
+            const isoNotice = document.getElementById('inspIsolatedNotice');
+            const nbTable = document.getElementById('inspNeighborsTable');
+            const nbBody = document.getElementById('inspNeighborsBody');
+            nbBody.innerHTML = '';
+
+            if (!v.neighbors || v.neighbors.length === 0) {
+                isoNotice.style.display = 'block';
+                nbTable.style.display = 'none';
+            } else {
+                isoNotice.style.display = 'none';
+                nbTable.style.display = 'table';
+                v.neighbors.forEach(nb => {
+                    const tr = document.createElement('tr');
+                    const tdName = document.createElement('td');
+                    const link = document.createElement('a');
+                    link.href = 'javascript:void(0)';
+                    link.style.color = '#2563eb';
+                    link.style.fontWeight = '700';
+                    link.style.textDecoration = 'none';
+                    link.textContent = nb.filename;
+                    link.onclick = () => selectVertexById(nb.id);
+                    tdName.appendChild(link);
+
+                    const tdWeight = document.createElement('td');
+                    tdWeight.style.fontWeight = '700';
+                    tdWeight.textContent = nb.formattedWeight + ' (' + nb.exactWeight + ')';
+
+                    tr.appendChild(tdName);
+                    tr.appendChild(tdWeight);
+                    nbBody.appendChild(tr);
+                });
+            }
+        }
+
+        function selectVertexById(docId) {
+            currentSelectedId = docId || '';
+            if (currentSelectedId && vertexById[currentSelectedId] && highlightedComponentNumber !== null) {
+                highlightedComponentNumber = vertexById[currentSelectedId].componentNumber;
+            }
+            updateInspectorPanel();
+            renderInteractiveGraph();
+        }
+
+        function toggleSelectedComponentHighlight() {
+            const v = currentSelectedId ? vertexById[currentSelectedId] : null;
+            if (!v) return;
+            if (highlightedComponentNumber === v.componentNumber) {
+                highlightedComponentNumber = null;
+            } else {
+                highlightedComponentNumber = v.componentNumber;
+            }
+            updateInspectorPanel();
+            renderInteractiveGraph();
+        }
+
+        function highlightComponentByNumber(compNum) {
+            highlightedComponentNumber = compNum;
+            const comp = graphComponents.find(c => c.componentNumber === compNum);
+            if (comp && Array.isArray(comp.documentIds) && comp.documentIds.length > 0) {
+                currentSelectedId = comp.documentIds[0];
+            }
+            updateInspectorPanel();
+            renderInteractiveGraph();
+        }
+
+        function resetGraphSelection() {
+            currentSelectedId = '';
+            highlightedComponentNumber = null;
+            activeTraversalIds = [];
+            updateInspectorPanel();
+            renderInteractiveGraph();
+        }
+
+        if (graphVertices.length > 0) {
+            computeInitialPositions();
+            updateInspectorPanel();
+            renderInteractiveGraph();
+        }
+    </script>
 </body>
 </html>

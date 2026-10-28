@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Optimization Framework | Interactive DSA Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --sidebar-bg: #0f172a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --card-bg: #ffffff;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 280px; background-color: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+        .brand { padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid #1e293b; }
+        .brand-icon { font-size: 1.8rem; color: var(--accent); }
+        .brand-title { font-weight: 800; font-size: 1.1rem; line-height: 1.2; letter-spacing: -0.5px; }
+        .brand-subtitle { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .nav-container { padding: 1rem 0; flex: 1; }
+        .nav-section { padding: 1rem 1.5rem 0.5rem; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-item:hover { background: #1e293b; color: #fff; }
+        .nav-item.active { background: #1e293b; color: #fff; border-left-color: var(--accent); }
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem; }
+
+        .main-wrapper { flex: 1; overflow-y: auto; padding: 2rem 3rem; }
+        .hero { margin-bottom: 1.75rem; }
+        .hero h1 { font-size: 2rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0; letter-spacing: -0.5px; }
+        .hero-highlight { color: var(--accent); }
+        .hero p { color: var(--text-muted); font-size: 1rem; margin: 0; line-height: 1.5; }
+
+        .card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.85rem; }
+        .card-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+        .card-title i { color: var(--accent); }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; align-items: end; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.75px; }
+        .form-control { width: 100%; padding: 0.65rem 0.8rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--text-main); background: #f8fafc; }
+        .form-control:focus { outline: none; border-color: var(--accent); background: #fff; }
+        .form-control:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+        .btn { padding: 0.65rem 1.2rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.15s; text-decoration: none; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-secondary { background: #fff; color: var(--text-main); border-color: var(--border); }
+        .btn-secondary:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .alert { padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 0.75rem; }
+        .alert-warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .alert-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .alert-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+        .nav-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; background: #f8fafc; padding: 1rem 1.25rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1.25rem; }
+        .step-counter { font-size: 0.95rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.75rem; }
+        .stage-badge { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-buttons { display: flex; gap: 0.5rem; }
+
+        .explanation-box { background: #eff6ff; border-left: 4px solid var(--accent); padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; margin-bottom: 1.25rem; }
+        .explanation-title { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 0.35rem 0; }
+        .explanation-text { font-size: 0.9rem; color: #1e293b; margin: 0; line-height: 1.5; }
+
+        .state-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .state-table th { width: 260px; background: #f8fafc; color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; padding: 0.85rem 1rem; text-align: left; border: 1px solid var(--border); vertical-align: top; }
+        .state-table td { padding: 0.85rem 1rem; border: 1px solid var(--border); font-family: monospace; font-size: 0.9rem; color: #0f172a; word-break: break-word; }
+
+        .chip-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .state-chip { background: #f1f5f9; border: 1px solid #cbd5e1; color: #0f172a; padding: 0.2rem 0.6rem; border-radius: 4px; font-family: monospace; font-size: 0.82rem; font-weight: 600; }
+
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .summary-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; }
+        .summary-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.75px; margin-bottom: 0.4rem; }
+        .summary-val { font-family: monospace; font-size: 0.95rem; font-weight: 600; color: #0f172a; word-break: break-word; }
+
+        .complexity-badges { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .comp-pill { background: #0f172a; color: #f8fafc; padding: 0.4rem 0.85rem; border-radius: 6px; font-family: monospace; font-size: 0.85rem; font-weight: 600; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; }
+            .main-wrapper { padding: 1rem; overflow-y: visible; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .state-table th { width: 140px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <div class="brand-text">
+                <div class="brand-title">OPTIMIZATION<br>FRAMEWORK</div>
+                <div class="brand-subtitle">DSA DOCUMENT ENGINE</div>
+            </div>
+        </div>
+        <div class="nav-container">
+            <div class="nav-section">OVERVIEW</div>
+            <a href="/" class="nav-item"><i class="fa-solid fa-gauge"></i> Dashboard & Upload</a>
+
+            <div class="nav-section">PROCESSING</div>
+            <a href="/pipeline" class="nav-item"><i class="fa-solid fa-bars-progress"></i> Processing Pipeline</a>
+            <a href="/analysis" class="nav-item"><i class="fa-solid fa-microscope"></i> DSA Analysis</a>
+            <a href="/walkthrough" class="nav-item active"><i class="fa-solid fa-shoe-prints"></i> Algorithm Walkthrough</a>
+
+            <div class="nav-section">ALGORITHMS</div>
+            <a href="/string-algorithms" class="nav-item"><i class="fa-solid fa-code"></i> String Algorithms</a>
+            <a href="/similarity" class="nav-item"><i class="fa-solid fa-not-equal"></i> Similarity Matrix</a>
+            <a href="/graph" class="nav-item"><i class="fa-solid fa-network-wired"></i> Graph Visualization</a>
+
+            <div class="nav-section">RESULTS</div>
+            <a href="/results" class="nav-item"><i class="fa-solid fa-layer-group"></i> Results & Categories</a>
+            <a href="/export" class="nav-item"><i class="fa-solid fa-file-export"></i> Export JSON</a>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="hero">
+            <h1>Interactive <span class="hero-highlight">DSA Walkthrough</span></h1>
+            <p>Step-by-step execution trace of the actual Java Data Structures and Algorithms operating on your uploaded documents.</p>
+        </div>
+
+        <div th:if="${!hasDocs}" class="alert alert-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+                <strong>No Documents Uploaded:</strong> Please upload at least one document on the <a href="/" style="color:#92400e; font-weight:700;">Dashboard</a> to start an algorithm walkthrough.
+            </div>
+        </div>
+
+        <div th:if="${hasDocs and !analysisReady}" id="analysisWarningBanner" class="alert alert-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+                <strong>Analysis Status Notice:</strong> String-matching walkthroughs are ready immediately. Feature Optimization (Merge Sort), Jaccard Similarity, BFS, DFS, and Connected Components require running <strong>Run Full Analysis</strong> on the <a href="/" style="color:#1e40af; font-weight:700;">Dashboard</a> first.
+            </div>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- CONFIGURATION FORM -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fa-solid fa-sliders"></i> Walkthrough Configuration</h3>
+            </div>
+            <form action="/walkthrough" method="post" id="walkthroughForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="algorithmSelect">Algorithm</label>
+                        <select id="algorithmSelect" name="algorithm" class="form-control" th:disabled="${!hasDocs}">
+                            <option th:each="entry : ${algorithms}"
+                                    th:value="${entry.key}"
+                                    th:text="${entry.value}"
+                                    th:selected="${entry.key == selectedAlgorithm}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="docAGroup">
+                        <label class="form-label" id="docALabel" for="docIdSelect">Target Document</label>
+                        <select id="docIdSelect" name="docId" class="form-control" th:disabled="${!hasDocs}">
+                            <option value="" th:if="${!hasDocs}">-- No Documents Uploaded --</option>
+                            <option th:each="doc : ${documents}"
+                                    th:value="${doc.id}"
+                                    th:text="${doc.originalFilename}"
+                                    th:selected="${doc.id == selectedDocId}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="docBGroup" style="display: none;">
+                        <label class="form-label" for="docIdBSelect">Second Document (Document B)</label>
+                        <select id="docIdBSelect" name="docIdB" class="form-control" th:disabled="${!hasDocs}">
+                            <option value="" th:if="${!hasDocs}">-- No Documents Uploaded --</option>
+                            <option th:each="doc : ${documents}"
+                                    th:value="${doc.id}"
+                                    th:text="${doc.originalFilename}"
+                                    th:selected="${doc.id == selectedDocIdB}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="patternGroup" style="display: none;">
+                        <label class="form-label" for="patternInput">Search Pattern (comma-separated for Aho-Corasick)</label>
+                        <input type="text" id="patternInput" name="pattern" class="form-control"
+                               placeholder="Enter pattern (e.g. health)"
+                               th:value="${inputPattern}"
+                               th:disabled="${!hasDocs}">
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" id="startWalkthroughBtn" class="btn btn-primary" style="width: 100%;" th:disabled="${!hasDocs}">
+                            <i class="fa-solid fa-play"></i> Start Walkthrough
+                        </button>
+                    </div>
+                </div>
+                <div id="requirementHint" style="margin-top: 0.85rem; font-size: 0.82rem; color: var(--text-muted);"></div>
+            </form>
+        </div>
+
+        <!-- WALKTHROUGH EXECUTION PANEL -->
+        <div th:if="${walkthroughResult != null}">
+            <!-- Final Result & Input Summary -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fa-solid fa-flag-checkered"></i> <span th:text="${walkthroughResult.algorithmName}"></span> — Execution Summary</h3>
+                    <span class="stage-badge" th:text="${walkthroughResult.category}"></span>
+                </div>
+                <div class="summary-grid">
+                    <div class="summary-box">
+                        <div class="summary-label">Actual Input Data</div>
+                        <div class="summary-val" th:text="${walkthroughResult.inputSummary}"></div>
+                    </div>
+                    <div class="summary-box" style="border-color: #bfdbfe; background: #eff6ff;">
+                        <div class="summary-label" style="color: var(--accent);">Final Algorithm Result</div>
+                        <div class="summary-val" style="color: #1e3a8a;" th:text="${walkthroughResult.finalResultSummary}"></div>
+                    </div>
+                </div>
+
+                <!-- Step Navigation & Interactive State Viewer -->
+                <div class="nav-bar">
+                    <div class="step-counter">
+                        <span>Step <span id="currentStepNum">1</span> of <span id="totalStepNum" th:text="${walkthroughResult.totalSteps}">1</span></span>
+                        <span class="stage-badge" id="currentStageBadge">-</span>
+                    </div>
+                    <div class="nav-buttons">
+                        <button type="button" id="prevStepBtn" class="btn btn-secondary" onclick="navigateStep(-1)" disabled>
+                            <i class="fa-solid fa-backward-step"></i> Previous Step
+                        </button>
+                        <button type="button" id="nextStepBtn" class="btn btn-secondary" onclick="navigateStep(1)">
+                            Next Step <i class="fa-solid fa-forward-step"></i>
+                        </button>
+                        <button type="button" id="resetStepBtn" class="btn btn-secondary" onclick="resetWalkthrough()">
+                            <i class="fa-solid fa-rotate-left"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step Explanation -->
+                <div class="explanation-box">
+                    <div class="explanation-title" id="currentOperationTitle">Operation</div>
+                    <p class="explanation-text" id="currentExplanationText">Explanation</p>
+                </div>
+
+                <!-- Current Algorithm State Table -->
+                <div>
+                    <h4 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.75px; color: var(--text-muted);">
+                        <i class="fa-solid fa-microchip"></i> Current Algorithm State
+                    </h4>
+                    <table class="state-table">
+                        <tbody id="stepStateTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Complexity Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fa-solid fa-gauge-high"></i> Theoretical Time & Auxiliary-Space Complexity</h3>
+                </div>
+                <div class="complexity-badges">
+                    <span class="comp-pill">Theoretical Time Complexity: <span th:text="${walkthroughResult.timeComplexity}"></span></span>
+                    <span class="comp-pill">Auxiliary Space Complexity: <span th:text="${walkthroughResult.spaceComplexity}"></span></span>
+                </div>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;" th:text="${walkthroughResult.complexityNote}"></p>
+            </div>
+        </div>
+
+        <!-- Empty State when no walkthrough has been started yet -->
+        <div th:if="${walkthroughResult == null}" class="card" style="text-align: center; padding: 3rem 2rem; color: var(--text-muted);">
+            <i class="fa-solid fa-shoe-prints" style="font-size: 2.5rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+            <h3 style="margin: 0 0 0.5rem 0; color: #0f172a;">Ready to Trace Algorithm Execution</h3>
+            <p style="margin: 0 0 1.5rem 0; font-size: 0.95rem;">Select one of the 10 implemented DSA algorithms above and click <strong>Start Walkthrough</strong> to inspect every intermediate operation step by step.</p>
+            <div style="display: flex; justify-content: center; gap: 0.5rem;">
+                <button type="button" class="btn btn-secondary" disabled><i class="fa-solid fa-backward-step"></i> Previous Step</button>
+                <button type="button" class="btn btn-secondary" disabled>Next Step <i class="fa-solid fa-forward-step"></i></button>
+                <button type="button" class="btn btn-secondary" disabled><i class="fa-solid fa-rotate-left"></i> Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const hasDocs = /*[[${hasDocs}]]*/ false;
+        const analysisReady = /*[[${analysisReady}]]*/ false;
+        const walkthroughSteps = /*[[${walkthroughResult != null ? walkthroughResult.steps : emptySteps}]]*/ [];
+
+        const algoSelect = document.getElementById('algorithmSelect');
+        const docAGroup = document.getElementById('docAGroup');
+        const docALabel = document.getElementById('docALabel');
+        const docIdSelect = document.getElementById('docIdSelect');
+        const docBGroup = document.getElementById('docBGroup');
+        const docIdBSelect = document.getElementById('docIdBSelect');
+        const patternGroup = document.getElementById('patternGroup');
+        const patternInput = document.getElementById('patternInput');
+        const startBtn = document.getElementById('startWalkthroughBtn');
+        const hintEl = document.getElementById('requirementHint');
+
+        const stringAlgos = ['naive', 'kmp', 'z', 'rabinkarp', 'ahocorasick'];
+        const analysisRequiredAlgos = ['mergesort', 'jaccard', 'bfs', 'dfs', 'components'];
+
+        function updateFormControls() {
+            if (!algoSelect) return;
+            const algo = algoSelect.value;
+            const isStringAlgo = stringAlgos.includes(algo);
+            const isJaccard = (algo === 'jaccard');
+            const isComponents = (algo === 'components');
+            const needsAnalysis = analysisRequiredAlgos.includes(algo);
+
+            // Document A visibility/state
+            if (isComponents) {
+                docAGroup.style.display = 'none';
+                docIdSelect.disabled = true;
+            } else {
+                docAGroup.style.display = 'flex';
+                docIdSelect.disabled = !hasDocs;
+                if (isJaccard) {
+                    docALabel.textContent = 'First Document (Document A)';
+                } else if (algo === 'bfs' || algo === 'dfs') {
+                    docALabel.textContent = 'Starting Document (Graph Vertex)';
+                } else {
+                    docALabel.textContent = 'Target Document';
+                }
+            }
+
+            // Document B visibility/state
+            if (isJaccard) {
+                docBGroup.style.display = 'flex';
+                docIdBSelect.disabled = !hasDocs;
+            } else {
+                docBGroup.style.display = 'none';
+                docIdBSelect.disabled = true;
+            }
+
+            // Pattern input visibility/state
+            if (isStringAlgo) {
+                patternGroup.style.display = 'flex';
+                patternInput.disabled = !hasDocs;
+                patternInput.required = true;
+            } else {
+                patternGroup.style.display = 'none';
+                patternInput.disabled = true;
+                patternInput.required = false;
+            }
+
+            // Enable/disable Start button based on data/analysis availability
+            if (!hasDocs) {
+                startBtn.disabled = true;
+                hintEl.textContent = 'Upload at least one document on the Dashboard to enable walkthroughs.';
+            } else if (needsAnalysis && !analysisReady) {
+                startBtn.disabled = true;
+                hintEl.innerHTML = '<i class="fa-solid fa-lock"></i> This algorithm requires processed features/graph. Please click <strong>Run Full Analysis</strong> on the Dashboard first.';
+            } else {
+                startBtn.disabled = false;
+                if (isStringAlgo) {
+                    hintEl.textContent = 'Uses the selected document\'s extracted text and your search pattern.';
+                } else if (isJaccard) {
+                    hintEl.textContent = 'Compares the Top 15 optimized feature sets of Document A and Document B using J(A,B) = |A ∩ B| / |A ∪ B|.';
+                } else if (isComponents) {
+                    hintEl.textContent = 'Discovers all connected components across the entire backend document graph using BFS.';
+                } else if (algo === 'mergesort') {
+                    hintEl.textContent = 'Traces Custom Merge Sort over the selected document\'s extracted term frequencies.';
+                } else {
+                    hintEl.textContent = 'Traces traversal on the current backend document graph starting from the selected document.';
+                }
+            }
+        }
+
+        if (algoSelect) {
+            algoSelect.addEventListener('change', updateFormControls);
+            updateFormControls();
+        }
+
+        // Step Navigation Logic (Do NOT autoplay by default)
+        let currentStepIndex = 0;
+
+        function renderCurrentStep() {
+            if (!walkthroughSteps || walkthroughSteps.length === 0) return;
+            const step = walkthroughSteps[currentStepIndex];
+
+            document.getElementById('currentStepNum').textContent = (currentStepIndex + 1);
+            document.getElementById('totalStepNum').textContent = walkthroughSteps.length;
+            document.getElementById('currentStageBadge').textContent = step.stage || 'Step';
+            document.getElementById('currentOperationTitle').textContent = step.operation || '';
+            document.getElementById('currentExplanationText').textContent = step.explanation || '';
+
+            const tbody = document.getElementById('stepStateTableBody');
+            tbody.innerHTML = '';
+
+            const stateObj = step.state || {};
+            const keys = Object.keys(stateObj);
+            if (keys.length === 0) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 2;
+                td.textContent = 'No intermediate state variables for this step.';
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            } else {
+                keys.forEach(key => {
+                    const tr = document.createElement('tr');
+                    const th = document.createElement('th');
+                    th.textContent = key;
+
+                    const td = document.createElement('td');
+                    const val = stateObj[key];
+
+                    if (Array.isArray(val)) {
+                        if (val.length === 0) {
+                            td.textContent = '[] (Empty)';
+                        } else {
+                            const chipContainer = document.createElement('div');
+                            chipContainer.className = 'chip-list';
+                            val.forEach(item => {
+                                const span = document.createElement('span');
+                                span.className = 'state-chip';
+                                span.textContent = String(item);
+                                chipContainer.appendChild(span);
+                            });
+                            td.appendChild(chipContainer);
+                        }
+                    } else if (val !== null && typeof val === 'object') {
+                        td.textContent = JSON.stringify(val);
+                    } else {
+                        td.textContent = val !== null && val !== undefined ? String(val) : '';
+                    }
+
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                });
+            }
+
+            const prevBtn = document.getElementById('prevStepBtn');
+            const nextBtn = document.getElementById('nextStepBtn');
+            const resetBtn = document.getElementById('resetStepBtn');
+
+            if (prevBtn) prevBtn.disabled = (currentStepIndex === 0);
+            if (nextBtn) nextBtn.disabled = (currentStepIndex >= walkthroughSteps.length - 1);
+            if (resetBtn) resetBtn.disabled = (currentStepIndex === 0);
+        }
+
+        function navigateStep(delta) {
+            if (!walkthroughSteps || walkthroughSteps.length === 0) return;
+            const nextIdx = currentStepIndex + delta;
+            if (nextIdx >= 0 && nextIdx < walkthroughSteps.length) {
+                currentStepIndex = nextIdx;
+                renderCurrentStep();
+            }
+        }
+
+        function resetWalkthrough() {
+            if (!walkthroughSteps || walkthroughSteps.length === 0) return;
+            currentStepIndex = 0;
+            renderCurrentStep();
+        }
+
+        if (walkthroughSteps && walkthroughSteps.length > 0) {
+            renderCurrentStep();
+        }
+    </script>
+</body>
+</html>
