@@ -68,6 +68,7 @@ public class CategoryService {
             } else {
                 label = dom.stream()
                         .map(TermFrequency::getTerm)
+                        .filter(t -> t != null && !t.isEmpty())
                         .map(t -> t.substring(0, 1).toUpperCase() + t.substring(1))
                         .collect(Collectors.joining(" / "));
 

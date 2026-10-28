@@ -182,12 +182,19 @@ public class WalkthroughService {
         }
 
         result.setInputSummary("Document: " + doc.getOriginalFilename() + " (N = " + text.length() + " chars) | Pattern: \"" + cleanPattern + "\"");
+        List<Integer> allPositions = searchRes.getPositions() != null ? searchRes.getPositions() : Collections.emptyList();
+        List<Integer> displayPositions = allPositions.size() > 50
+                ? new ArrayList<>(allPositions.subList(0, 50))
+                : allPositions;
+        String posText = allPositions.size() > 50
+                ? displayPositions + " ... (" + allPositions.size() + " total)"
+                : allPositions.toString();
         if (searchRes.isFound()) {
-            result.setFinalResultSummary("Match Found (" + searchRes.getPositions().size() + " occurrence(s)) at index positions: " + searchRes.getPositions() + " | Comparisons: " + searchRes.getComparisons());
+            result.setFinalResultSummary("Match Found (" + allPositions.size() + " occurrence(s)) at index positions: " + posText + " | Comparisons: " + searchRes.getComparisons());
         } else {
             result.setFinalResultSummary("No matches found (Positions: []) | Comparisons: " + searchRes.getComparisons());
         }
-        result.setFinalResultData(searchRes.getPositions());
+        result.setFinalResultData(displayPositions);
         result.setSteps(steps);
         return result;
     }

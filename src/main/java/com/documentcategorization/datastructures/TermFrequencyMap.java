@@ -16,7 +16,7 @@ public class TermFrequencyMap {
         this.buckets = new HashNode[capacity];
     }
     private int getIndex(String key) {
-        return Math.abs(key.hashCode() % capacity);
+        return Math.floorMod(key.hashCode(), capacity);
     }
     public void increment(String key) {
         int index = getIndex(key);

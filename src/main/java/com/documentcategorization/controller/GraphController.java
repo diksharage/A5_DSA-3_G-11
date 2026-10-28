@@ -47,11 +47,13 @@ public class GraphController {
     }
 
     @PostMapping("/graph/threshold")
-    public String updateThreshold(@RequestParam("threshold") double threshold) {
-        double clamped = Math.max(0.0, Math.min(1.0, threshold));
-        graphService.setCurrentThreshold(clamped);
-        if (!documentService.getAllDocuments().isEmpty()) {
-            analysisService.runFullAnalysis();
+    public String updateThreshold(@RequestParam(value = "threshold", required = false) Double threshold) {
+        if (threshold != null && !threshold.isNaN() && !threshold.isInfinite()) {
+            double clamped = Math.max(0.0, Math.min(1.0, threshold));
+            graphService.setCurrentThreshold(clamped);
+            if (!documentService.getAllDocuments().isEmpty()) {
+                analysisService.runFullAnalysis();
+            }
         }
         return "redirect:/graph";
     }

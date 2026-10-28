@@ -186,14 +186,14 @@
                 <div class="card" style="margin-bottom: 0;">
                     <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-file-code"></i> 3. Extracted Text</h3></div>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-top:-1rem; margin-bottom:1rem;">The original textual content extracted from the uploaded format.</p>
-                    <div class="text-panel" th:text="${doc.rawText}"></div>
+                    <div class="text-panel" th:text="${doc.rawText != null and doc.rawText.length() > 25000 ? #strings.substring(doc.rawText, 0, 25000) + ' ... [Displaying first 25,000 of ' + doc.rawText.length() + ' characters]' : doc.rawText}"></div>
                 </div>
 
                 <!-- 4. Preprocessed Text -->
                 <div class="card" style="margin-bottom: 0;">
                     <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-scissors"></i> 4. Preprocessed Text</h3></div>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-top:-1rem; margin-bottom:1rem;">Text after normalization and $O(1)$ HashSet stop-word removal.</p>
-                    <div class="text-panel" th:text="${doc.tokens != null and doc.tokens.size() > 0 ? #strings.listJoin(doc.tokens, ' ') : 'Tokens not available.'}"></div>
+                    <div class="text-panel" th:text="${doc.tokens != null and doc.tokens.size() > 0 ? (doc.tokens.size() > 2500 ? #strings.listJoin(doc.tokens.subList(0, 2500), ' ') + ' ... [' + doc.tokens.size() + ' total tokens]' : #strings.listJoin(doc.tokens, ' ')) : 'Tokens not available.'}"></div>
                 </div>
             </div>
 
@@ -209,7 +209,7 @@
                                 <tr th:if="${doc.extractedFeatures == null or doc.extractedFeatures.size() == 0}">
                                     <td colspan="2" style="text-align:center; color:var(--text-muted);">No frequencies calculated.</td>
                                 </tr>
-                                <tr th:each="tf : ${doc.extractedFeatures}">
+                                <tr th:each="tf : ${doc.extractedFeatures != null and doc.extractedFeatures.size() > 300 ? doc.extractedFeatures.subList(0, 300) : doc.extractedFeatures}">
                                     <td style="font-family: monospace; font-weight: 600;" th:text="${tf.term}"></td>
                                     <td th:text="${tf.frequency}"></td>
                                 </tr>

@@ -265,7 +265,7 @@ body {
         <span th:if="${!result.found}" style="background:#991b1b; color:#fca5a5; padding:0.4rem 1rem; border-radius:999px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-xmark"></i> MATCH NONE</span>
     </div>
     <div class="res-grid">
-        <div class="res-box"><div class="res-label">Match Indices [Array]</div><div class="res-val" th:text="${#lists.isEmpty(result.positions) ? '[]' : result.positions}"></div></div>
+        <div class="res-box"><div class="res-label">Match Indices [Array]</div><div class="res-val" th:text="${#lists.isEmpty(result.positions) ? '[]' : (result.positions.size() > 100 ? result.positions.subList(0, 100) + ' ... (' + result.positions.size() + ' total)' : result.positions)}"></div></div>
         <div class="res-box"><div class="res-label">Comparisons Made</div><div class="res-val" style="color:#a7f3d0;" th:text="${result.comparisons}"></div></div>
     </div>
     <div style="margin-top: 2rem; background: #0b1120; padding: 1.5rem; border-radius: 8px; border: 1px solid #1e293b;">
@@ -284,6 +284,7 @@ body {
 <div class="card" style="margin-top: 2rem;">
     <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-code-compare"></i> Algorithm Comparison View</h3></div>
     <form action="/string-algorithms/compare" method="post">
+        <input type="hidden" name="text" th:value="${inputText}">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end;">
             <div>
                 <label class="lab-label">Target Document</label>

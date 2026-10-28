@@ -35,11 +35,16 @@ public class DocumentController {
     }
 
     @PostMapping("/upload")
-    public String uploadFiles(@RequestParam("files") MultipartFile[] files, RedirectAttributes attrs) {
+    public String uploadFiles(@RequestParam(value = "files", required = false) MultipartFile[] files, RedirectAttributes attrs) {
+        if (files == null || files.length == 0) {
+            attrs.addFlashAttribute("error", "Please select at least one file to upload.");
+            return "redirect:/";
+        }
         int successCount = 0;
         for (MultipartFile f : files) {
-            if (f.isEmpty()) continue;
-            String name = f.getOriginalFilename() != null ? f.getOriginalFilename().toLowerCase() : "";
+            if (f == null || f.isEmpty()) continue;
+            String origName = f.getOriginalFilename() != null ? f.getOriginalFilename().trim() : "document.txt";
+            String name = origName.toLowerCase();
             if (!name.endsWith(".txt") && !name.endsWith(".pdf") && !name.endsWith(".docx")) {
                 attrs.addFlashAttribute("error", "Unsupported file type. Supported formats: TXT, PDF, DOCX.");
                 continue;
@@ -47,21 +52,21 @@ public class DocumentController {
             try {
                 String extractedText = extractionService.extractText(f);
                 if (extractedText == null || extractedText.trim().isEmpty()) {
-                    attrs.addFlashAttribute("error", "No extractable text found in " + f.getOriginalFilename());
+                    attrs.addFlashAttribute("error", "No extractable text found in " + origName);
                     continue;
                 }
 
                 Document doc = new Document();
                 doc.setId(UUID.randomUUID().toString());
-                doc.setOriginalFilename(f.getOriginalFilename());
+                doc.setOriginalFilename(origName);
                 doc.setFileType(f.getContentType());
                 doc.setFileSize(f.getSize());
                 doc.setRawText(extractedText);
                 doc.setCurrentStage(PipelineStage.UPLOADED);
                 documentService.addDocument(doc);
                 successCount++;
-            } catch (Exception e) {
-                attrs.addFlashAttribute("error", "Failed to extract text from " + f.getOriginalFilename());
+            } catch (Throwable e) {
+                attrs.addFlashAttribute("error", "Failed to extract text from " + origName);
             }
         }
         if (successCount > 0) {
@@ -89,9 +94,11 @@ public class DocumentController {
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam("id") String id) {
-        documentService.deleteDocument(id);
-        analysisService.reset();
+    public String delete(@RequestParam(value = "id", required = false) String id) {
+        if (id != null && !id.trim().isEmpty()) {
+            documentService.deleteDocument(id.trim());
+            analysisService.reset();
+        }
         return "redirect:/";
     }
 

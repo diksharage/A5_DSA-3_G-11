@@ -9,7 +9,8 @@ import java.util.*;
 @Service
 public class StringAlgorithmsService {
 
-    private static final int MAX_DETAILED_STEPS = 350;
+    private static final int MAX_DETAILED_STEPS = 200;
+    private static final int MAX_POSITIONS_IN_STEP = 30;
 
     public StringSearchResult naiveSearch(String text, String pattern) {
         return naiveSearch(text, pattern, null);
@@ -67,7 +68,7 @@ public class StringAlgorithmsService {
                     state.put("Characters Compared", "text[" + (i + j) + "] = '" + formatChar(tc) + "' vs pattern[" + j + "] = '" + formatChar(pc) + "'");
                     state.put("Comparison Result", charMatch ? "MATCH" : "MISMATCH");
                     state.put("Comparisons So Far", comparisons);
-                    state.put("Matches Found So Far", new ArrayList<>(pos));
+                    state.put("Matches Found So Far", summarizePositions(pos));
                     addStep(steps, "2. Character Comparison",
                             "Alignment i = " + i + ", Compare text[" + (i + j) + "] ('" + formatChar(tc) + "') vs pattern[" + j + "] ('" + formatChar(pc) + "')",
                             charMatch
@@ -80,12 +81,12 @@ public class StringAlgorithmsService {
             }
             if (j == m) {
                 pos.add(i);
-                if (steps != null) {
+                if (steps != null && canAddDetailedStep(steps)) {
                     Map<String, Object> matchState = new LinkedHashMap<>();
                     matchState.put("Matched Alignment Position (i)", i);
                     matchState.put("Matched Substring", text.substring(i, i + m));
                     matchState.put("Comparisons So Far", comparisons);
-                    matchState.put("Matching Positions Discovered", new ArrayList<>(pos));
+                    matchState.put("Matching Positions Discovered", summarizePositions(pos));
                     addStep(steps, "3. Pattern Match Found",
                             "Full Pattern Match at Index " + i,
                             "All M = " + m + " characters of pattern '" + pattern + "' matched starting at text index " + i + ".",
@@ -104,10 +105,10 @@ public class StringAlgorithmsService {
             finalState.put("Pattern", pattern);
             finalState.put("Total Character Comparisons", comparisons);
             finalState.put("Total Matches Found", pos.size());
-            finalState.put("Final Matching Positions", new ArrayList<>(pos));
+            finalState.put("Final Matching Positions", summarizePositions(pos));
             addStep(steps, "4. Final Result",
                     "Naive Search Complete — " + pos.size() + " Match(es) Found",
-                    "Completed Naive String Matching after " + comparisons + " character comparison(s). Final matching positions: " + pos + ".",
+                    "Completed Naive String Matching after " + comparisons + " character comparison(s). Total matches found: " + pos.size() + ".",
                     finalState);
         }
         return res;
@@ -225,7 +226,7 @@ public class StringAlgorithmsService {
                 cmpState.put("Comparison Result", matchedChar ? "MATCH (advance i -> " + i + ", j -> " + j + ")" : "MISMATCH");
                 cmpState.put("LPS Array", Arrays.toString(lps));
                 cmpState.put("Comparisons So Far", comparisons);
-                cmpState.put("Matches Found So Far", new ArrayList<>(pos));
+                cmpState.put("Matches Found So Far", summarizePositions(pos));
                 addStep(steps, "2. KMP Character Comparison",
                         "Compare text[" + curI + "] ('" + formatChar(tc) + "') vs pattern[" + curJ + "] ('" + formatChar(pc) + "')",
                         matchedChar
@@ -238,13 +239,13 @@ public class StringAlgorithmsService {
                 int matchIdx = i - j;
                 pos.add(matchIdx);
                 int nextJ = lps[j - 1];
-                if (steps != null) {
+                if (steps != null && canAddDetailedStep(steps)) {
                     Map<String, Object> matchState = new LinkedHashMap<>();
                     matchState.put("Match Found at Text Index (i - j)", matchIdx);
                     matchState.put("Matched Substring", text.substring(matchIdx, matchIdx + m));
                     matchState.put("LPS Shift (j = lps[" + (j - 1) + "])", nextJ);
                     matchState.put("LPS Array", Arrays.toString(lps));
-                    matchState.put("Matching Positions Discovered", new ArrayList<>(pos));
+                    matchState.put("Matching Positions Discovered", summarizePositions(pos));
                     addStep(steps, "3. Pattern Match & LPS Shift",
                             "Full Match at Index " + matchIdx + " -> Shift j to lps[" + (j - 1) + "] = " + nextJ,
                             "Reached j == M (" + m + "). Recorded match at index " + matchIdx + " and shifted j to lps[" + (j - 1) + "] = " + nextJ + " without backtracking i.",
@@ -295,10 +296,11 @@ public class StringAlgorithmsService {
             finalState.put("Pattern", pattern);
             finalState.put("Computed LPS Array", Arrays.toString(lps));
             finalState.put("Total Comparisons", comparisons);
-            finalState.put("Final Matching Positions", new ArrayList<>(pos));
+            finalState.put("Total Matches Found", pos.size());
+            finalState.put("Final Matching Positions", summarizePositions(pos));
             addStep(steps, "5. Final Result",
                     "KMP Search Complete — " + pos.size() + " Match(es) Found",
-                    "Finished KMP search in " + comparisons + " comparison(s). Final matching positions: " + pos + ".",
+                    "Finished KMP search in " + comparisons + " comparison(s). Total matches found: " + pos.size() + ".",
                     finalState);
         }
         return res;
@@ -370,7 +372,7 @@ public class StringAlgorithmsService {
             }
 
             boolean isFullMatch = (Z[i] == m);
-            if (steps != null && (canAddDetailedStep(steps) || isFullMatch)) {
+            if (steps != null && canAddDetailedStep(steps)) {
                 Map<String, Object> zState = new LinkedHashMap<>();
                 zState.put("Current Z-Array Index (i)", i);
                 zState.put("Character concat[i]", "'" + formatChar(concat.charAt(i)) + "'");
@@ -408,10 +410,11 @@ public class StringAlgorithmsService {
             finalState.put("Pattern Length (M)", m);
             finalState.put("Total Prefix Comparisons", comparisons);
             finalState.put("Z-Array Summary", formatZSlice(Z, Math.min(l - 1, 30)));
-            finalState.put("Final Matching Positions", new ArrayList<>(pos));
+            finalState.put("Total Matches Found", pos.size());
+            finalState.put("Final Matching Positions", summarizePositions(pos));
             addStep(steps, "4. Final Result",
                     "Z Algorithm Complete — " + pos.size() + " Match(es) Found",
-                    "Scanned Z-array for entries where Z[i] == " + m + " and mapped each to text position (i - " + m + " - 1). Final matching positions: " + pos + ".",
+                    "Scanned Z-array for entries where Z[i] == " + m + " and mapped each to text position (i - " + m + " - 1). Total matches found: " + pos.size() + ".",
                     finalState);
         }
         return res;
@@ -476,7 +479,7 @@ public class StringAlgorithmsService {
                 cmpState.put("Pattern Hash (p)", p);
                 cmpState.put("Current Window Hash (t)", currentWindowHash);
                 cmpState.put("Hash Comparison", "t (" + currentWindowHash + ") != p (" + p + ") -> Skip character verification");
-                cmpState.put("Matches Found So Far", new ArrayList<>(pos));
+                cmpState.put("Matches Found So Far", summarizePositions(pos));
                 addStep(steps, "2. Hash Comparison",
                         "Window i = " + i + " ('" + windowStr + "'): Hash t = " + currentWindowHash + " != p = " + p,
                         "Window hash (" + currentWindowHash + ") does not equal pattern hash (" + p + "). No character-by-character verification needed.",
@@ -496,7 +499,7 @@ public class StringAlgorithmsService {
                 }
                 if (match) pos.add(i);
 
-                if (steps != null && (canAddDetailedStep(steps) || match)) {
+                if (steps != null && canAddDetailedStep(steps)) {
                     Map<String, Object> verifyState = new LinkedHashMap<>();
                     verifyState.put("Window Start Position (i)", i);
                     verifyState.put("Current Window Substring", windowStr);
@@ -506,7 +509,7 @@ public class StringAlgorithmsService {
                     verifyState.put("Characters Verified in Window", charsChecked + " / " + M);
                     verifyState.put("Verification Outcome", match ? "EXACT MATCH CONFIRMED at index " + i : "SPURIOUS HIT (Hash Collision — characters differ)");
                     verifyState.put("Total Character Comparisons", comparisons);
-                    verifyState.put("Matching Positions Discovered", new ArrayList<>(pos));
+                    verifyState.put("Matching Positions Discovered", summarizePositions(pos));
                     addStep(steps, match ? "3. Hash Match & Character Verification (MATCH)" : "3. Hash Match & Character Verification (Collision)",
                             "Window i = " + i + ": Hash Match (t == p == " + p + ") -> " + (match ? "Confirmed Match" : "Hash Collision"),
                             match
@@ -549,10 +552,11 @@ public class StringAlgorithmsService {
             finalState.put("Pattern Hash (p)", p);
             finalState.put("Hash Modulo (q)", q);
             finalState.put("Total Verification Comparisons", comparisons);
-            finalState.put("Final Matching Positions", new ArrayList<>(pos));
+            finalState.put("Total Matches Found", pos.size());
+            finalState.put("Final Matching Positions", summarizePositions(pos));
             addStep(steps, "5. Final Result",
                     "Rabin-Karp Search Complete — " + pos.size() + " Match(es) Found",
-                    "Completed Rabin-Karp rolling-hash scan with " + comparisons + " character verification comparison(s). Final matching positions: " + pos + ".",
+                    "Completed Rabin-Karp rolling-hash scan with " + comparisons + " character verification comparison(s). Total matches found: " + pos.size() + ".",
                     finalState);
         }
         return res;
@@ -710,7 +714,7 @@ public class StringAlgorithmsService {
             }
 
             boolean foundHere = !stepMatches.isEmpty();
-            if (steps != null && (canAddDetailedStep(steps) || foundHere)) {
+            if (steps != null && canAddDetailedStep(steps)) {
                 Map<String, Object> scanState = new LinkedHashMap<>();
                 scanState.put("Text Index (i)", i);
                 scanState.put("Input Character text[" + i + "]", "'" + formatChar(c) + "'");
@@ -718,7 +722,7 @@ public class StringAlgorithmsService {
                 scanState.put("Failure Transitions Followed", failTransitions.isEmpty() ? "None" : String.join(", ", failTransitions));
                 scanState.put("New Automaton State", formatState(curr));
                 scanState.put("Pattern Matches Discovered at Step", foundHere ? stepMatches : "None");
-                scanState.put("All Match Positions So Far", new ArrayList<>(allPos));
+                scanState.put("All Match Positions So Far", summarizePositions(allPos));
                 addStep(steps, foundHere ? "4. Pattern Match Discovered" : "3. Automaton State Transition",
                         "Read text[" + i + "] = '" + formatChar(c) + "': " + formatState(startState) + " -> " + formatState(curr) + (foundHere ? " (MATCH!)" : ""),
                         foundHere
@@ -736,17 +740,37 @@ public class StringAlgorithmsService {
         res.setPreprocessingInfo("Trie built with failure links for " + validPatterns.size() + " patterns.");
 
         if (steps != null) {
+            Map<String, Object> summarizedMulti = new LinkedHashMap<>();
+            for (Map.Entry<String, List<Integer>> entry : multiPos.entrySet()) {
+                summarizedMulti.put(entry.getKey(), summarizePositions(entry.getValue()));
+            }
             Map<String, Object> finalState = new LinkedHashMap<>();
             finalState.put("Patterns Searched", validPatterns);
-            finalState.put("Per-Pattern Match Positions", multiPos);
-            finalState.put("All Matching Start Positions (Sorted)", new ArrayList<>(allPos));
+            finalState.put("Per-Pattern Match Positions", summarizedMulti);
+            finalState.put("Total Matches Found", allPos.size());
+            finalState.put("All Matching Start Positions (Sorted)", summarizePositions(allPos));
             finalState.put("Total Characters Processed", comparisons);
             addStep(steps, "5. Final Result",
                     "Aho-Corasick Search Complete — " + allPos.size() + " Total Match(es)",
-                    "Completed single-pass Aho-Corasick automaton scan across " + comparisons + " character(s). Final matching positions: " + allPos + ".",
+                    "Completed single-pass Aho-Corasick automaton scan across " + comparisons + " character(s). Total matches found: " + allPos.size() + ".",
                     finalState);
         }
         return res;
+    }
+
+    private List<String> summarizePositions(List<Integer> positions) {
+        if (positions == null || positions.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<String> out = new ArrayList<>();
+        int limit = Math.min(positions.size(), MAX_POSITIONS_IN_STEP);
+        for (int i = 0; i < limit; i++) {
+            out.add(String.valueOf(positions.get(i)));
+        }
+        if (positions.size() > MAX_POSITIONS_IN_STEP) {
+            out.add("... (+" + (positions.size() - MAX_POSITIONS_IN_STEP) + " more, " + positions.size() + " total)");
+        }
+        return out;
     }
 
     private String formatState(ACTrieNode node) {

@@ -311,7 +311,7 @@ body {
                     <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                         <span class="badge badge-slate" th:text="${grp.documentCount} + (${grp.documentCount == 1} ? ' Document' : ' Documents')"></span>
                         <span class="badge badge-slate" th:text="${grp.internalEdgeCount} + (${grp.internalEdgeCount == 1} ? ' Graph Edge' : ' Graph Edges')"></span>
-                        <a th:if="${grp.documents.size() > 0}" th:href="@{/graph(selectedDocId=${grp.documents[0].id})}" class="btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.76rem;">
+                        <a th:if="${grp.documents.size() > 0}" th:href="'/graph?selectedDocId=' + ${grp.documents[0].id}" class="btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.76rem;">
                             <i class="fa-solid fa-network-wired"></i> Highlight in Graph
                         </a>
                     </div>
@@ -447,7 +447,7 @@ body {
                                     <span>
                                         Formula: <code th:text="'|A &cap; B| / |A &cup; B| = ' + ${edge.intersectionSize} + ' / ' + ${edge.unionSize} + ' &ge; ' + ${threshold}"></code>
                                     </span>
-                                    <a th:href="@{/walkthrough(algo='jaccard', docAId=${edge.docAId}, docBId=${edge.docBId})}" style="color: var(--accent); text-decoration: none; font-weight: 600;">
+                                    <a th:href="'/walkthrough?algo=jaccard&docAId=' + ${edge.docAId} + '&docBId=' + ${edge.docBId}" style="color: var(--accent); text-decoration: none; font-weight: 600;">
                                         Verify in Walkthrough &rarr;
                                     </a>
                                 </div>
@@ -616,7 +616,7 @@ body {
                             <td>
                                 <div style="font-size: 0.8rem; color: #1e293b; line-height: 1.5;" th:text="${docExp.membershipExplanation}"></div>
                                 <div style="margin-top: 0.5rem; display: flex; gap: 0.6rem; flex-wrap: wrap; font-size: 0.74rem;">
-                                    <a th:href="@{/graph(selectedDocId=${docExp.docId})}" style="color: var(--accent); text-decoration: none; font-weight: 600;">
+                                    <a th:href="'/graph?selectedDocId=' + ${docExp.docId}" style="color: var(--accent); text-decoration: none; font-weight: 600;">
                                         <i class="fa-solid fa-circle-nodes"></i> Inspect Vertex in Graph
                                     </a>
                                     <a th:href="'/document/' + ${docExp.docId}" style="color: #475569; text-decoration: none; font-weight: 600;">

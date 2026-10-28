@@ -179,9 +179,10 @@ public class ResultsController {
                 for (TermFrequency tf : cat.getDominantFeatures()) {
                     domTermSet.add(tf.getTerm());
                     Map<String, Object> dfMap = new LinkedHashMap<>();
+                    String termStr = tf.getTerm() != null ? tf.getTerm() : "";
                     dfMap.put("rank", rank++);
-                    dfMap.put("term", tf.getTerm());
-                    dfMap.put("titleTerm", tf.getTerm().substring(0, 1).toUpperCase() + tf.getTerm().substring(1));
+                    dfMap.put("term", termStr);
+                    dfMap.put("titleTerm", termStr.isEmpty() ? "" : termStr.substring(0, 1).toUpperCase() + termStr.substring(1));
                     dfMap.put("frequency", tf.getFrequency());
                     List<String> contribs = contribMap.getOrDefault(tf.getTerm(), Collections.emptyList());
                     dfMap.put("contributions", contribs);

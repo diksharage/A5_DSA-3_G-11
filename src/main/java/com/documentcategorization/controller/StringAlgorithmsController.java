@@ -78,8 +78,12 @@ public class StringAlgorithmsController {
             return "redirect:/string-algorithms";
         }
 
+        String displayInputText = searchTarget.length() > 4000
+                ? searchTarget.substring(0, 4000) + "\n... [Preview truncated at 4,000 of " + searchTarget.length() + " characters]"
+                : searchTarget;
+
         model.addAttribute("result", result);
-        model.addAttribute("inputText", searchTarget);
+        model.addAttribute("inputText", displayInputText);
         model.addAttribute("inputPattern", pattern);
         model.addAttribute("selectedAlgorithm", algorithm);
         model.addAttribute("docName", docName);
@@ -128,8 +132,12 @@ public class StringAlgorithmsController {
         compareResults.add(stringAlgorithmsService.rabinKarpSearch(searchTarget, pattern));
         compareResults.add(stringAlgorithmsService.ahoCorasickSearch(searchTarget, Arrays.asList(pattern.split(","))));
 
+        String displayInputText = searchTarget.length() > 4000
+                ? searchTarget.substring(0, 4000) + "\n... [Preview truncated at 4,000 of " + searchTarget.length() + " characters]"
+                : searchTarget;
+
         model.addAttribute("compareResults", compareResults);
-        model.addAttribute("inputText", searchTarget);
+        model.addAttribute("inputText", displayInputText);
         model.addAttribute("inputPattern", pattern);
         model.addAttribute("docName", docName);
         model.addAttribute("documents", documentService.getAllDocuments());

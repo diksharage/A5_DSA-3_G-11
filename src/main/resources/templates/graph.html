@@ -302,7 +302,7 @@
                             <span style="font-size: 0.76rem; text-transform: uppercase; color: #1e40af; font-weight: 700;">
                                 Backend BFS Order (Start: <span th:text="${traversalStart}"></span>)
                             </span>
-                            <a th:href="@{/walkthrough(algorithm='bfs', docId=${traversalStartId})}" style="font-size: 0.76rem; color: var(--accent); font-weight: 600; text-decoration: none;">
+                            <a th:href="'/walkthrough?algorithm=bfs&docId=' + ${traversalStartId}" style="font-size: 0.76rem; color: var(--accent); font-weight: 600; text-decoration: none;">
                                 Step-by-Step Walkthrough &rarr;
                             </a>
                         </div>
@@ -340,7 +340,7 @@
                             <span style="font-size: 0.76rem; text-transform: uppercase; color: #3730a3; font-weight: 700;">
                                 Backend DFS Order (Start: <span th:text="${traversalStart}"></span>)
                             </span>
-                            <a th:href="@{/walkthrough(algorithm='dfs', docId=${traversalStartId})}" style="font-size: 0.76rem; color: #4f46e5; font-weight: 600; text-decoration: none;">
+                            <a th:href="'/walkthrough?algorithm=dfs&docId=' + ${traversalStartId}" style="font-size: 0.76rem; color: #4f46e5; font-weight: 600; text-decoration: none;">
                                 Step-by-Step Walkthrough &rarr;
                             </a>
                         </div>

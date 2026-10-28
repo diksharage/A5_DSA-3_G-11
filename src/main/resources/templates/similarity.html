@@ -262,7 +262,7 @@
                                     th:class="${'heat-cell ' + cell.heatClass}"
                                     th:attr="aria-label=${'Similarity between ' + cell.rowDoc + ' and ' + cell.colDoc + ' is ' + cell.formattedScore + ' (' + cell.sharedCount + ' shared of ' + cell.unionCount + ' union terms)'},
                                              title=${cell.rowDoc + ' vs ' + cell.colDoc + ': J(A,B) = ' + cell.sharedCount + '/' + cell.unionCount + ' = ' + cell.exactScore}">
-                                    <a th:href="@{/walkthrough(algorithm='jaccard', docId=${cell.rowId}, docIdB=${cell.colId})}"
+                                    <a th:href="'/walkthrough?algorithm=jaccard&docId=' + ${cell.rowId} + '&docIdB=' + ${cell.colId}"
                                        style="color: inherit; text-decoration: none; display: block; width: 100%; height: 100%;">
                                         <span th:text="${cell.formattedScore}">0.00</span>
                                         <span th:if="${cell.meetsThreshold}" class="threshold-dot" title="Meets Graph Edge Threshold"></span>

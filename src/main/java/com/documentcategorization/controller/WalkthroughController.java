@@ -120,7 +120,7 @@ public class WalkthroughController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         } catch (Exception ex) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Unable to generate walkthrough."));
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage() != null ? ex.getMessage() : "Unable to generate walkthrough."));
         }
     }
 
